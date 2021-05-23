@@ -5,5 +5,6 @@ public enum ResultStatus {
     FAIL,
     COMPILATION_ERROR,
     RUNTIME_ERROR,
+    OUT_OF_MEMORY_ERROR,
     TIMEOUT_ERROR
 }
