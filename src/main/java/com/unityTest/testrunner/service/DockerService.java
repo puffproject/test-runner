@@ -1,5 +1,6 @@
 package com.unityTest.testrunner.service;
 
+import com.unityTest.testrunner.constants.ExitCodes;
 import com.unityTest.testrunner.entity.Case;
 import com.unityTest.testrunner.exception.code.DockerImageBuildFailureException;
 import com.unityTest.testrunner.exception.code.DockerTimeoutException;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,8 +36,8 @@ public class DockerService {
     @Value("${runner.timeouts.docker-container}")
     private int dockerContainerTimeout;
 
-    @Value("${runner.timeouts.process}")
-    private int processThreadTimeout;
+    @Value("${runner.container.memory}")
+    private int dockerContainerMemory;
 
     @Value("${docker.build.dir}")
     private String dockerWorkingDir;
@@ -103,14 +106,19 @@ public class DockerService {
      * @return Result of running the test code contained in the suite file
      */
     public TestResult runTestCaseInDockerContainer(Case caze, String image, String envPath, String workingDir, String suiteFileName) {
-        String[] cmd = new String[] { "docker", "run", "--rm",
-                "--env-file", envPath,
-                "-e", String.format("TEST_FILE_NAME=%s", suiteFileName),   // Add environment variables
+        final String CONTAINER_NAME = String.format("%d_%s_%s", caze.getId(), image.replace(':','-'), new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date()));
+
+        String[] cmd = new String[] { "docker", "run",
+                "--rm",
+                "-m", String.format("%dM", dockerContainerMemory),  // Set container memory
+                "--name", CONTAINER_NAME,                           // Set container name
+                "--env-file", envPath,                              // Add environment variables
+                "-e", String.format("TEST_FILE_NAME=%s", suiteFileName),
                 "-e", String.format("PF_TIMEOUT=%s", this.entryScriptTimeout),
                 "-v", String.format("%s/%s:%s/%s", workingDir, suiteFileName, this.dockerWorkingDir, suiteFileName),  // Set volume
                 image };
 
-        log.info(String.format("Running docker image %s with command: %s", image, String.join(" ", cmd)));
+        log.info(String.format("Running docker image %s with name %s with command: %s", image, CONTAINER_NAME, String.join(" ", cmd)));
 
         ProcessBuilder pb = new ProcessBuilder(cmd);
         pb.directory(new File(workingDir));         // Set working directory
@@ -122,7 +130,7 @@ public class DockerService {
 
             Process p = pb.start();                         // Start the process
             InputStream stream = p.getInputStream();        // Capture the process output
-            if(!p.waitFor(this.processThreadTimeout, TimeUnit.SECONDS)) {
+            if(!p.waitFor(this.dockerContainerTimeout, TimeUnit.SECONDS)) {
                 stream.close();         // close the stream
                 stopWatch.stop();
                 p.destroyForcibly();    // kill the process
@@ -134,15 +142,23 @@ public class DockerService {
                 stopWatch.stop();
                 log.info(String.format("Finished running test case %d in %.3f seconds", caze.getId(), (float) stopWatch.getTime(TimeUnit.MILLISECONDS) / 1000));
                 switch (p.exitValue()) {
-                    case 0:
+                    case ExitCodes.SUCCESS:
                         return new TestResult(caze.getId(), ResultStatus.PASS, output);
-                    case 1:
+                    case ExitCodes.ERROR:
                         return new TestResult(caze.getId(), ResultStatus.FAIL, output);
-                    case 127:
-                        return new TestResult(caze.getId(), ResultStatus.TIMEOUT_ERROR, output);
-                    case 139:
+                    case ExitCodes.RUNTIME_ERROR:
+                        return new TestResult(caze.getId(), ResultStatus.RUNTIME_ERROR, output);
+                    case ExitCodes.DOCKER_RUN_FAIL:
+                    case ExitCodes.SEG_FAULT:
                         return new TestResult(caze.getId(), ResultStatus.OUT_OF_MEMORY_ERROR, output);
+                    case ExitCodes.SIGTERM:
+                    case ExitCodes.SIGKILL:
+                        return new TestResult(caze.getId(), ResultStatus.TIMEOUT_ERROR, output);
+                    case ExitCodes.SIGXFSZ:
+                    case ExitCodes.ILLEGAL:
+                        return new TestResult(caze.getId(), ResultStatus.CONSTRAINT_VIOLATION_ERROR, output);
                     default:
+                        log.warn(String.format("Unexpected exit code %d in docker container run", p.exitValue()));
                         return new TestResult(caze.getId(), ResultStatus.RUNTIME_ERROR, output);
                 }
             }
