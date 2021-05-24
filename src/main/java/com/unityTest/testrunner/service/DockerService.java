@@ -159,12 +159,12 @@ public class DockerService {
                         return new TestResult(caze.getId(), ResultStatus.CONSTRAINT_VIOLATION_ERROR, output);
                     default:
                         log.warn(String.format("Unexpected exit code %d in docker container run", p.exitValue()));
-                        return new TestResult(caze.getId(), ResultStatus.RUNTIME_ERROR, output);
+                        return new TestResult(caze.getId(), ResultStatus.UNEXPECTED_ERROR, output);
                 }
             }
         } catch (InterruptedException | IOException e) {
-            e.printStackTrace();
-            return new TestResult(caze.getId(), ResultStatus.RUNTIME_ERROR, e.getMessage());
+            log.warn(String.format("Unexpected IO error when running test case %d with error %s", caze.getId(), e.getMessage()));
+            return new TestResult(caze.getId(), ResultStatus.IO_ERROR, e.getMessage() + e.getCause());
         }
     }
 }
