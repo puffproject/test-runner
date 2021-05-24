@@ -69,10 +69,10 @@ runner:
   timeouts:  # Timeout values in seconds for each of the layers running test cases
     # These should be in ascending order
     entry-script: 5       # Time to run in shell script
-    docker-container: 6   # Time to run in container
-    process: 7            # Time for process thread to run
+    docker-container: 7   # Time to run in container
 
-  dir: WORKING_DIR   # Path to working directory to build test cases in
+  container.memory: 400       # Amount of memory (RAM) (Mb) allocated for each test case to run in a container
+  dir: WORKING_DIR            # Path to working directory to build test cases in
   env: /runner/environments/reg.env  # Environment with values for entry script
 
 docker:
