@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -134,7 +135,9 @@ public class DockerService {
                 stream.close();         // close the stream
                 stopWatch.stop();
                 p.destroyForcibly();    // kill the process
-                log.info(String.format("Test case %d timed out during run.", caze.getId()));
+                log.info(String.format("Process running docker container for case %d timed out after %d seconds. " +
+                        "Terminating container with name %s", caze.getId(), this.dockerContainerTimeout, CONTAINER_NAME));
+                stopDockerContainer(CONTAINER_NAME, 0);
                 return new TestResult(caze.getId(), ResultStatus.TIMEOUT_ERROR, "");
             } else {
                 String output = IOUtils.toString(stream, StandardCharsets.UTF_8);
@@ -165,6 +168,29 @@ public class DockerService {
         } catch (InterruptedException | IOException e) {
             log.warn(String.format("Unexpected IO error when running test case %d with error %s", caze.getId(), e.getMessage()));
             return new TestResult(caze.getId(), ResultStatus.IO_ERROR, e.getMessage() + e.getCause());
+        }
+    }
+
+    public void stopDockerContainer(String name, int timeout) {
+        String[] cmd = { "docker", "stop", "-t", String.valueOf(timeout), name };
+        log.info(String.format("Stopping docker container %s after a timeout of %d seconds with command: %s", name, timeout, String.join(" ", cmd)));
+
+        ProcessBuilder pb = new ProcessBuilder(cmd).redirectErrorStream(true);
+        try {
+            Process p = pb.start();
+            InputStream stream = p.getInputStream();        // Capture the process output
+            // Wait for process to finish
+            p.waitFor();
+            if(p.exitValue() != 0) {
+                String output = IOUtils.toString(stream, StandardCharsets.UTF_8);
+                log.warn(String.format("Failed to stop docker container %s. Command exited with value %d and output\n%s", name, p.exitValue(), output));
+            } else {
+                log.info(String.format("Successfully stopped docker container %s", name));
+            }
+            stream.close();
+        } catch (IOException | InterruptedException e) {
+            log.warn(String.format("Failed to stop docker container %s. Threw exception %s", name, e.getLocalizedMessage()));
+            e.printStackTrace();
         }
     }
 }
