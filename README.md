@@ -265,7 +265,7 @@ curl --header "Content-Type: application/json" \
 ```
 
 You should receive a json response matching something like the following:
-```json
+```
 {
 	"caseId": {CASE_ID},
 	"status": "PASS",
