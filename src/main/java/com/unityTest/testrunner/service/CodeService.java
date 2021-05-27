@@ -1,21 +1,23 @@
 package com.unityTest.testrunner.service;
 
+import com.unityTest.testrunner.constants.DockerConstants;
 import com.unityTest.testrunner.entity.*;
-import com.unityTest.testrunner.exception.code.InvalidFunctionName;
-import com.unityTest.testrunner.exception.code.UnsupportedProgrammingLanguage;
+import com.unityTest.testrunner.exception.code.DockerImageBuildFailureException;
+import com.unityTest.testrunner.exception.code.DockerTimeoutException;
+import com.unityTest.testrunner.exception.code.InvalidFunctionNameException;
+import com.unityTest.testrunner.exception.code.UnsupportedProgrammingLanguageException;
 import com.unityTest.testrunner.models.PLanguage;
-import com.unityTest.testrunner.runner.PythonRunner;
-import com.unityTest.testrunner.runner.Runner;
 import com.unityTest.testrunner.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 import java.io.*;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -24,53 +26,108 @@ import java.util.List;
 @Service
 public class CodeService {
 
-    @Value("${code-runner.dir.path}")
+    @Autowired
+    private DockerService dockerService;
+
+    @Value("${runner.dir}")
     private String workingDirectoryPath;
 
-    @Value("${code-runner.cmds.python3}")
-    private String pytestCmd;
+    @Value("${runner.env}")
+    private String envFile;
 
-    @Value("${code-runner.max-timeout}")
-    private long timeoutInSeconds;
-
+    /**
+     * Asynchronously run a list of test cases in an isolated environment and send back the results
+     * @param emitter Emitter to send back results or errors
+     * @param submission Code submission containing source files
+     * @param suite Suite test cases belong to
+     * @param suiteFile Suite file to be used as a base when constructing test case code
+     * @param testCases List of test cases to run against submission source code
+     */
     @Async("threadPoolTaskExecutor")
-    public void runTestCasesInSuite(ResponseBodyEmitter emitter, Submission submission, Suite suite, SuiteFile suiteFile, List<Case> testCases) throws IOException {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss");
-        final String NEW_DIR_NAME = String.format("dir_%d_%d_%s", suite.getId(), suiteFile.getId(), dateFormat.format(new Date()));
-        final String PATH = Utils.buildPath(this.workingDirectoryPath, NEW_DIR_NAME);
+    public void asyncRunTestCasesInSuite(ResponseBodyEmitter emitter, Submission submission, Suite suite, SuiteFile suiteFile, List<Case> testCases) {
+        // Create directory name dir_${suiteId}_${suiteFileId}_${submissionId}_${timestamp}
+        final String NEW_DIR_NAME = String.format("dir_%d_%d_%d_%s",
+                suite.getId(),
+                suiteFile.getId(),
+                submission.getId(),
+                new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date()));
+        final String WORK_DIR = Utils.buildPath(this.workingDirectoryPath, NEW_DIR_NAME);
 
-        // Create the new working directory
-        new File(PATH).mkdirs();
-        // Write all files from submission into directory
-        for(SourceFile sourceFile : submission.getSourceFiles()) {
-            FileUtils.writeByteArrayToFile(new File(Utils.buildPath(PATH, sourceFile.getFileName())), sourceFile.getContent());
-        }
-        // Write suite file into directory
-        File tests = new File(Utils.buildPath(PATH, suiteFile.getFileName()));
-
-        // Get code runner based on language
-        // TODO IMPLEMENT RUNNERS FOR HASKELL AND JAVA
-        Runner runner;
-        switch (suite.getLanguage()) {
+        String imageName, dockerfilePath, entryFilePath, entryFileName;
+        switch(suite.getLanguage()) {
             case PYTHON3:
-                runner = new PythonRunner(this.pytestCmd, this.timeoutInSeconds);
+                imageName = DockerConstants.PYTHON_DOCKER_IMAGE_NAME;
+                dockerfilePath = dockerService.getPythonDockerFilePath();
+                entryFilePath = dockerService.getPythonEntryFilePath();
+                entryFileName = DockerConstants.PYTHON_ENTRY_FILE;
                 break;
+            case HASKELL:
+                throw new UnsupportedProgrammingLanguageException(PLanguage.HASKELL);
+            case JAVA:
+                throw new UnsupportedProgrammingLanguageException(PLanguage.JAVA);
             default:
-                throw new UnsupportedProgrammingLanguage(suite.getLanguage());
+                throw new UnsupportedProgrammingLanguageException(suite.getLanguage());
         }
-        // Run all test cases and emit results
-        for(Case testCase : testCases) {
-            runner.writeToTestFile(tests, suiteFile, testCase);                             // Write test case content to suite file
-            emitter.send(runner.runTestCase(testCase, suiteFile.getFileName(), PATH));      // Run test case and emit result
-        };
-        // Delete the directory after use
-        FileUtils.deleteDirectory(new File(PATH));
-        emitter.complete();
+        try {
+            // Create the new working directory
+            log.info(String.format("Creating new directory and writing source files to %s", WORK_DIR));
+            new File(WORK_DIR).mkdirs();
+            // Write all files from submission into directory
+            for(SourceFile sourceFile : submission.getSourceFiles()) {
+                FileUtils.writeByteArrayToFile(new File(Utils.buildPath(WORK_DIR, sourceFile.getFileName())), sourceFile.getContent());
+            }
+            // Copy Dockerfile and entry point into working directory
+            FileUtils.copyFile(new File(getClass().getResource(dockerfilePath).getFile()), new File(Utils.buildPath(WORK_DIR, DockerConstants.DOCKERFILE)));
+            FileUtils.copyFile(new File(getClass().getResource(entryFilePath).getFile()), new File(Utils.buildPath(WORK_DIR, entryFileName)));
+            log.debug(String.format("Copying Dockerfile and entry point file %s into %s", entryFileName, WORK_DIR));
+
+            // Build docker image from source files in directory
+            String imageAndTag = dockerService.buildDockerImage(imageName, String.valueOf(submission.getId()), WORK_DIR);
+
+            // Write suite file into directory
+            File tests = new File(Utils.buildPath(WORK_DIR, suiteFile.getFileName()));
+
+            // Continually write test case to suite file and run in docker container
+            // Send results back to emitter
+            for(Case testcase : testCases) {
+                writeTestCaseToSuiteFile(suite.getLanguage(), tests, suiteFile, testcase);
+                // Run test cases in docker container
+                emitter.send(dockerService.runTestCaseInDockerContainer(
+                            testcase, imageAndTag, new File(getClass().getResource(envFile).getFile()).getAbsolutePath(),
+                            WORK_DIR, suiteFile.getFileName()),
+                        MediaType.APPLICATION_JSON
+                );
+            }
+            emitter.complete();
+        } catch (IOException e) {
+            e.printStackTrace();
+            emitter.completeWithError(e);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            emitter.completeWithError(e);
+        } catch (DockerImageBuildFailureException e) {
+            e.printStackTrace();
+            emitter.completeWithError(e);
+        } catch (DockerTimeoutException e) {
+            e.printStackTrace();
+            emitter.completeWithError(e);
+        } catch (Exception e) {
+            log.error("Unexpected exception");
+            emitter.completeWithError(e);
+        } finally {
+            // Clean up
+            try {
+                // Delete the directory after use
+                FileUtils.deleteDirectory(new File(WORK_DIR));
+            } catch (IOException e) {
+                log.warn(String.format("Could not find directory to delete %s with exception %s", WORK_DIR, e.getLocalizedMessage()));
+            }
+        }
     }
 
     public String buildTestCaseCode(PLanguage lang, String functionName, String functionBody) {
         // Check for invalid characters in the function name
-        if(!functionName.matches("[a-zA-Z][0-9a-zA-Z_]+")) throw new InvalidFunctionName(functionName, "Function identifier does not match regex [a-zA-Z][0-9a-zA-Z_]+");
+        if(!functionName.matches("[a-zA-Z][0-9a-zA-Z_]+")) throw new InvalidFunctionNameException(functionName, "Function identifier does not match regex [a-zA-Z][0-9a-zA-Z_]+");
 
         switch(lang) {
             case JAVA:
@@ -85,6 +142,18 @@ public class CodeService {
                 throw new IllegalArgumentException("Programming language not supported");
         }
         return null;
+    }
+
+    private void writeTestCaseToSuiteFile(PLanguage lang, File testFile, SuiteFile suiteFile, Case caze) throws IOException {
+        // Open a buffered writer to write the suite file contents with the test case
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(testFile, false));
+        // Write suite file content
+        bos.write(suiteFile.getContent());
+        // Write test case content to file depending on language
+        // TODO FIX THIS
+        bos.write(String.format("\n%s", Utils.indent(caze.getCode(), 1)).getBytes());
+        bos.flush();
+        bos.close();
     }
 
     private String buildPythonTestFunction(String funcName, String body) {

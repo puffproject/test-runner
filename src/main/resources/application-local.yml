@@ -24,7 +24,7 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
 
 swagger:
   auth:
@@ -65,11 +65,26 @@ service-account:
   client-id: puff-service-acc
   client-secret: 6d29c988-5da1-4528-9058-c288f0434e89   # DO NOT INCLUDE IN PROD
 
-code-runner:
-  max-timeout: 30
-  dir:
-    path: /mnt/d/Projects/puffTest
-  cmds:
-    python3: pytest
-    java: TODO
-    haskell: TODO
+runner:
+  timeouts:  # Timeout values in seconds for each of the layers running test cases
+    # These should be in ascending order
+    entry-script: 5       # Time to run in shell script
+    docker-container: 7   # Time to run in container
+
+  container.memory: 400       # Amount of memory (RAM) (Mb) allocated for each test case to run in a container
+  dir: WORKING_DIR            # Path to working directory to build test cases in
+  env: /runner/environments/reg.env  # Environment with values for entry script
+
+docker:
+  build:
+    dir: /code    # Working directory to construct in docker image
+    timeout: 10    # Timeout, in seconds, of docker build process
+    python3:
+      entry: /runner/docker/python3/python_entry.sh
+      dockerfile: /runner/docker/python3/Dockerfile
+    java:
+      entry: TODO
+      dockerfile: /runner/docker/java/Dockerfile
+    haskell:
+      entry: TODO
+      dockerfile: /runner/docker/haskell/Dockerfile

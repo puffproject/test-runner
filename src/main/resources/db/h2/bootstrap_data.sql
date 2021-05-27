@@ -38,7 +38,6 @@ VALUES
 --(1, 'Equality.py', 448, @USER_ID, FILE_READ('classpath:/sample/code/Equality.py')),
 --(1, 'MolecSet.py', 236, @USER_ID, FILE_READ('classpath:/sample/code/MolecSet.py')),
 --(1, 'MoleculeT.py', 1979, @USER_ID, FILE_READ('classpath:/sample/code/MoleculeT.py')),
---(1, 'ReactionT.py', 5817, @USER_ID, FILE_READ('classpath:/sample/code/ReactionT.py')),
 --(1, 'Set.py', 2092, @USER_ID, FILE_READ('classpath:/sample/code/Set.py'));
 --
 ---- CREATE SUITE FILE
@@ -51,7 +50,7 @@ VALUES
 --INSERT INTO TEST_CASE(ID, SUITE_ID, AUTHOR_ID, FUNCTION_NAME, DESCRIPTION, UPVOTE_COUNT, RUN_COUNT, PASS_COUNT, LANG, CODE)
 --VALUES
 --(100, 2, 'X03', 'member_empty', 'tests if member is empty', 100, 10, 7, 'PYTHON3',
---    CONCAT('def test_member_empty(self):',CHAR(10), CHAR(9), 'assert not self.emptySet.member(ElementT.F)', CHAR(10))),
+--    CONCAT('def test_member_empty(self):',CHAR(10), CHAR(9), 'assert self.emptySet.member(ElementT.F)', CHAR(10))),
 --
---(101, 2, 'X03', 'member_contains', 'tests if member contains an element', 200, 200, 42, 'PYTHON3',
+--(101, 2, @USER_ID, 'member_contains', 'tests if member contains an element', 200, 200, 42, 'PYTHON3',
 --    CONCAT('def test_member_contains(self):', CHAR(10), CHAR(9), 'assert self.elmSet.member(ElementT.H)', CHAR(10)));

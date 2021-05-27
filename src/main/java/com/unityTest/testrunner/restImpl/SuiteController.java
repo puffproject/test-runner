@@ -1,6 +1,7 @@
 package com.unityTest.testrunner.restImpl;
 
 import com.unityTest.testrunner.entity.*;
+import com.unityTest.testrunner.entity.Case_;
 import com.unityTest.testrunner.models.PLanguage;
 import com.unityTest.testrunner.models.VoteAction;
 import com.unityTest.testrunner.models.page.SuitePage;
@@ -134,12 +135,14 @@ public class SuiteController implements SuiteApi {
         }
         // Create emitter to send back results
         final ResponseBodyEmitter emitter = new ResponseBodyEmitter();
-        try {
-            codeService.runTestCasesInSuite(emitter, submission, suite, suiteFile, cases);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            emitter.completeWithError(e);
-        }
+        emitter.onError(throwable -> {
+            log.error(String.format("Failed to run test cases for suite %d with exception %s", suiteId, throwable.getLocalizedMessage()));
+        });
+        emitter.onCompletion(() -> {
+            log.info(String.format("Successfully ran test cases for suite %d", suiteId));
+        });
+        codeService.asyncRunTestCasesInSuite(emitter, submission, suite, suiteFile, cases);
+
         return new ResponseEntity<>(emitter, HttpStatus.OK);
     }
 }

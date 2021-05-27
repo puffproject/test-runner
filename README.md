@@ -55,9 +55,24 @@ curl -X POST 'http://localhost:8180/auth/realms/puff/protocol/openid-connect/tok
  --data-urlencode 'username=TEST_USER_USERNAME' \
  --data-urlencode 'password=TEST_USER_PASSWORD'
 ```
-### Run the backend
-In order to run a microservice locally run
+
+### Install Docker
+_Puff_ uses [Docker](https://www.docker.com/) containers to isolate and run test cases with user code in a secure environment, before returning their result.
+
+* Install Docker from their [Getting started](https://www.docker.com/get-started) page.
+* Build the following base images so Docker can cache some of the layers used by the processes and exponentially speed up image build times.
+
+Python3
+```shell
+cd src/main/resources/runner/docker/base && docker build -t pf_python3:base -f Dockerfile_py .
 ```
+Once the images are built go back to the root of the repository for the rest of the steps.
+
+* Change the `runner.dir` value in `src/main/resources/application-local.yml` to point to a directory where _Puff_ can copy code files and run containers from.
+
+### Run the backend
+In order to run a microservice locally run from the root directory:
+```shell
 mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
 * If you need to build the `.jar` of the application run `mvn package`.
@@ -84,6 +99,179 @@ Password:
 ```
 
 For more information about H2 databases see the [H2 Database Engine](https://www.h2database.com/html/main.html).
+
+### Docker
+
+_Puff_ runs each test case in isolation with a multi-layered, zero-trust approach to ensure security and speed when dealing with user submitted code. It accomplishes this with the following steps:
+
+1. Building an image of the system on which to run the test case. The command is as follows:
+
+```shell
+docker build --build-arg DIR=/code -t image_name:tag .
+```
+
+The image is built on a base image for the programming language required. A new user `appuser` is provisioned and added to proper groups. All user code files required are copied from the working directory into the image. An entrypoint that will run the shell script containing the test command is configured. 
+
+The following controls are applied: 
+
+* Docker image build timeout with Java thread timeout
+
+2. Running the constructed image as a container in which a shell script executing the test command is run. The command is as follows:
+```shell
+docker run --rm -m 450M --name my_container --env-file .env -e OTHER_ENV_VALUE=XX -v path/to/test/file:/code/file:ro image_name
+```
+
+The container is run as an executable with an environment supplied through an environment file. The container's entrypoint is the shell script containing the test command to run the test case. The test suite file containing the test cases to run is supplied through a read-only [volume](https://docs.docker.com/storage/volumes/) which is modified by _Puff_ for each test case. 
+
+The following controls are applied:
+
+* Docker memory limit with the `-m` flag
+* Virtual memory limit with `ulimit -v`
+* Stack memory limit with `ulimit -s`
+* Max user processes with `ulimit -u`
+* Max file size written with `ulimit -f`
+* Max number of file descriptors open with `ulimit -n`
+* Test command timeout with `timeout`
+* Docker container timeout with Java thread timeout
+
+Most of the above values are configurable from the environment file or the profile.
+
+## Supported Languages
+
+### Python 3
+_Puff_ supports projects written in python 3 and uses [pytest](https://docs.pytest.org/en/6.2.x/) for running test cases. After defining a test suite set the suite file following the below template:
+```python
+from pytest import *    # Python import REQUIRED
+
+# ... import all source modules and function
+# ... import any other helper libraries
+
+## Define a test class (or don't and use simple test functions)
+## Name MUST start with Test* for it to be recognized
+class TestFunc:
+
+	def setup_method(self, method):
+		# Setup any values test cases should have access to
+		# e.g. self.x = 2
+		pass
+
+	def teardown_method(self, method):
+		# Teardown any values setup
+		pass
+	
+	## There are other methods that pytest can take advantage of
+	# For more information see https://docs.pytest.org/en/6.2.x/getting-started.html#create-your-first-test
+
+	## All other test cases defined with be appended here
+	# ...
+```
+
+Users will then upload test cases as part of the suite. Once users upload source files they can run those test cases using your suite file against their uploaded source code.
+
+For a full demo see the [sample walkthrough](#sample-walkthrough) below.
+
+## Sample walkthrough
+If you've followed the above setup steps then you should be able to follow the below walkthrough. This example uses test cases written in python.
+
+Start up the microservice, see [run the backend](#run-the-backend). Authenticate as a user by making the curl call described in [setup keycloak](#Setup-Keycloak-(if-you-haven't-already)). Copy your token and set it as an environment variable:
+```shell
+TOKEN=YOUR_TOKEN_HERE
+```
+To pretty format the curl requests I'm using python's json tooling. If you don't have [python](https://www.python.org/downloads/) remove the pipe at the end of the curl call.
+
+You then need to create a **test suite** that will contain **test cases**. Make the following curl call:
+```shell
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer ${TOKEN}" \
+  --request POST \
+  --data '{"assignmentId": 1000, "language": "PYTHON3", "name": "Tests my function"}' \
+  http://localhost:8083/suite | python -m json.tool
+```
+Make a note of the id returned and set it as a variable `SUITE_ID=...`. See the list of test suites by running
+```shell
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer ${TOKEN}" \
+  --request GET \
+  http://localhost:8083/suite | python -m json.tool
+```
+
+Next, set the test suite's _base file_, all test case code will be appended to this file so it needs to be setup correctly. Create a file `test_func.py` with the following contents:
+
+```python
+from pytest import *
+from Func import *
+
+## Test class for some function
+class TestFunc:
+
+	def setup_method(self, method):
+		self.x = 2
+
+	def teardown_method(self, method):
+		pass
+```
+
+Run the follow curl command to set the file for the test suite.
+
+```shell
+curl --header "Content-Type: multipart/form-data" \
+  --header "Authorization: Bearer ${TOKEN}" \
+  --request POST \
+  -F file=@test_func.py \
+  http://localhost:8083/suite/${SUITE_ID}/setFile | python -m json.tool
+```
+
+Next, create a `Func.py` file with a single function:
+```python
+def getX():
+	return 2
+```
+
+Upload your `Func.py` file as the "source code" for your project you want to test:
+```shell
+curl --header "Content-Type: multipart/form-data" \
+  --header "Authorization: Bearer ${TOKEN}" \
+  --request POST \
+  -F files=@Func.py \
+  -F assignmentId=1000 \
+  http://localhost:8083/upload | python -m json.tool
+```
+
+Next upload the code for a test case you want to run. We'll check that the value returned from `getX()` in `Func.py` is equal to 2. Our test case will look like
+```python
+def test_isTwo(self):
+	assert self.x == getX()
+```
+
+ Create the test case in the test suite with the following call:
+
+```shell
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer ${TOKEN}" \
+  --request POST \
+  --data "{\"description\": \"Tests if value of x is 2\", \"body\": \"assert self.x == getX()\", \"suiteId\": ${SUITE_ID}, \"language\": \"PYTHON3\", \"functionName\": \"isTwo\"}" \
+  http://localhost:8083/case | python -m json.tool
+```
+
+Make a note of the id of the case and set it as a variable `CASE_ID=...`.
+
+Lastly, run the test case, specifying the id of the test case to run:
+```shell
+curl --header "Content-Type: application/json" \
+  --header "Authorization: Bearer ${TOKEN}" \
+  --request POST \
+  --no-buffer \
+  http://localhost:8083/suite/${SUITE_ID}/run?ids=${CASE_ID} | python -m json.tool
+```
+
+You should receive a json response matching something like the following:
+```
+{
+	"caseId": {CASE_ID},
+	"status": "PASS",
+	"message": ...
+}
+```
 
 ## Contributors
 The _Puff_ project is looking for contributors to join the initiative!

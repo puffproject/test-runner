@@ -9,7 +9,6 @@ import collections
 from Set import *
 from MoleculeT import *
 from CompoundT import *
-from ReactionT import *
 
 
 ## @brief Test class for Set ADT
