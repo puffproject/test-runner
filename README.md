@@ -78,6 +78,14 @@ mvn spring-boot:run -Dspring-boot.run.profiles=local
 * If you need to build the `.jar` of the application run `mvn package`.
 * In order to run tests run `mvn test`.
 
+
+### Running tests
+See the below commands for running tests:
+* run all tests: `mvn test`
+* run specific tests in a class: `mvn test -Dtest=TestClassName`
+* run specific method in a class: `mvn test -Dtest=TestClassName#TestMethodName`
+* run tests and generate a coverage report: `mvn test -P coverage`
+
 ## Development
 
 ### Swagger
