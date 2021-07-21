@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.unityTest.testrunner.models.PLanguage;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -14,6 +16,8 @@ import javax.validation.constraints.NotNull;
  * Models a test suite comprising multiple test cases
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @ApiModel(value = "TestSuite", description = "Models a test suite comprising multiple test cases")
 @Entity
 @Table(name = "TEST_SUITE")
