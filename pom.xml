@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.unityTest</groupId>
 	<artifactId>test-runner</artifactId>
-	<version>0.0.4-SNAPSHOT</version>
+	<version>0.0.5-SNAPSHOT</version>
 	<name>test-runner</name>
 	<description>Manage and run test suites and cases</description>
 
@@ -57,6 +57,12 @@
 					<artifactId>junit</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
