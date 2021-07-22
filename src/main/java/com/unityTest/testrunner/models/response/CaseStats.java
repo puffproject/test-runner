@@ -12,9 +12,9 @@ import lombok.Data;
 @Data
 public class CaseStats {
 
-    private int runCount;
+	private int runCount;
 
-    private int passCount;
+	private int passCount;
 
-    // TODO add something for last failed repeats here
+	// TODO add something for last failed repeats here
 }

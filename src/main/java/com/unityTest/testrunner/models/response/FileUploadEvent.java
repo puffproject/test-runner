@@ -17,22 +17,22 @@ import java.util.List;
 @ApiModel(value = "FileUpload", description = "Models an upload of a code file")
 public class FileUploadEvent {
 
-    @ApiModelProperty(value = "Upload time", required = true)
-    private Date uploadTime;
+	@ApiModelProperty(value = "Upload time", required = true)
+	private Date uploadTime;
 
-    @ApiModelProperty(value = "List of files uploaded", required = true)
-    private List<FileInfo> filesUploaded;
+	@ApiModelProperty(value = "List of files uploaded", required = true)
+	private List<FileInfo> filesUploaded;
 
-    protected FileUploadEvent(Date uploadTime) {
-        this.uploadTime = uploadTime;
-        this.filesUploaded = new ArrayList<>();
-    }
+	protected FileUploadEvent(Date uploadTime) {
+		this.uploadTime = uploadTime;
+		this.filesUploaded = new ArrayList<>();
+	}
 
-    public FileUploadEvent() {
-        this(new Date());
-    }
+	public FileUploadEvent() {
+		this(new Date());
+	}
 
-    public void addFile(String name, long size) {
-        this.filesUploaded.add(new FileInfo(name, size));
-    }
+	public void addFile(String name, long size) {
+		this.filesUploaded.add(new FileInfo(name, size));
+	}
 }

@@ -23,44 +23,42 @@ import javax.validation.constraints.NotNull;
 @Table(name = "TEST_SUITE")
 public class Suite {
 
-    @Id
-    @Column(name = "ID")
-    @GeneratedValue(generator = "sequence-generator")
-    @GenericGenerator(
-            name = "sequence-generator",
-            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "TEST_SUITE_SEQUENCE"),
-                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1000"),
-                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
-            }
-    )
-    private int id;
+	@Id
+	@Column(name = "ID")
+	@GeneratedValue(generator = "sequence-generator")
+	@GenericGenerator(
+		name = "sequence-generator",
+		strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+		parameters = {
+			@org.hibernate.annotations.Parameter(name = "sequence_name", value = "TEST_SUITE_SEQUENCE"),
+			@org.hibernate.annotations.Parameter(name = "initial_value", value = "1000"),
+			@org.hibernate.annotations.Parameter(name = "increment_size", value = "1")})
+	private int id;
 
-    // Id of assignment that suite tests
-    @ApiModelProperty(value = "Assignment id", required = true, example = "1001")
-    @NotNull
-    @Column(name = "ASSIGNMENT_ID")
-    private int assignmentId;
+	// Id of assignment that suite tests
+	@ApiModelProperty(value = "Assignment id", required = true, example = "1001")
+	@NotNull
+	@Column(name = "ASSIGNMENT_ID")
+	private int assignmentId;
 
-    // Name of test suite
-    @ApiModelProperty(value = "Name", example = "Function A tests")
-    @Column(name = "NAME")
-    private String name;
+	// Name of test suite
+	@ApiModelProperty(value = "Name", example = "Function A tests")
+	@Column(name = "NAME")
+	private String name;
 
-    // Programming language of all tests in suite
-    @ApiModelProperty(value = "Language", required = true, example = "JAVA")
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    @Column(name = "LANG")
-    private PLanguage language;
+	// Programming language of all tests in suite
+	@ApiModelProperty(value = "Language", required = true, example = "JAVA")
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	@Column(name = "LANG")
+	private PLanguage language;
 
-    // Upvote count of test suite
-    @ApiModelProperty(value = "upvotes")
-    @Column(name = "UPVOTE_COUNT")
-    private int upvotes;
+	// Upvote count of test suite
+	@ApiModelProperty(value = "upvotes")
+	@Column(name = "UPVOTE_COUNT")
+	private int upvotes;
 
-    @JsonIgnore
-    @Column(name = "AUTHOR_ID")
-    private String authorId;
+	@JsonIgnore
+	@Column(name = "AUTHOR_ID")
+	private String authorId;
 }

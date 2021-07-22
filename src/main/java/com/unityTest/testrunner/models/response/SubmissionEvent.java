@@ -16,23 +16,26 @@ import java.util.Date;
 @ApiModel(value = "Submission", description = "Models a submission of source files")
 public class SubmissionEvent extends FileUploadEvent {
 
-    @JsonIgnore
-    private int submissionId;
+	@JsonIgnore
+	private int submissionId;
 
-    @ApiModelProperty(value = "Assignment id of submission", required = true)
-    private int assignmentId;
+	@ApiModelProperty(value = "Assignment id of submission", required = true)
+	private int assignmentId;
 
-    @ApiModelProperty(value = "Link to download the files contained in the submission", required = true, example = "/download?submissionId=12")
-    private String downloadUrl;
+	@ApiModelProperty(
+		value = "Link to download the files contained in the submission",
+		required = true,
+		example = "/download?submissionId=12")
+	private String downloadUrl;
 
-    private SubmissionEvent(Date submissionTime) {
-        super(submissionTime);
-    }
+	private SubmissionEvent(Date submissionTime) {
+		super(submissionTime);
+	}
 
-    public SubmissionEvent(int submissionId, int assignmentId, Date submissionTime) {
-        this(submissionTime);
-        this.submissionId = submissionId;
-        this.assignmentId = assignmentId;
-        this.downloadUrl = String.format("%s?submissionId=%d", "/download", submissionId);
-    }
+	public SubmissionEvent(int submissionId, int assignmentId, Date submissionTime) {
+		this(submissionTime);
+		this.submissionId = submissionId;
+		this.assignmentId = assignmentId;
+		this.downloadUrl = String.format("%s?submissionId=%d", "/download", submissionId);
+	}
 }

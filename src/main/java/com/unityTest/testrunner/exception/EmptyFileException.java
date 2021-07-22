@@ -5,7 +5,7 @@ package com.unityTest.testrunner.exception;
  */
 public class EmptyFileException extends RuntimeException {
 
-    public EmptyFileException(String filename) {
-        super(String.format("Cannot save empty file %s.", filename));
-    }
+	public EmptyFileException(String filename) {
+		super(String.format("Cannot save empty file %s.", filename));
+	}
 }

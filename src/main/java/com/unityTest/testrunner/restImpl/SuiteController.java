@@ -41,108 +41,126 @@ import java.util.List;
 @RestController
 public class SuiteController implements SuiteApi {
 
-    @Autowired
-    private SuiteService suiteService;
+	@Autowired
+	private SuiteService suiteService;
 
-    @Autowired
-    private CaseService caseService;
+	@Autowired
+	private CaseService caseService;
 
-    @Autowired
-    private SubmissionService submissionService;
+	@Autowired
+	private SubmissionService submissionService;
 
-    @Autowired
-    private CodeService codeService;
+	@Autowired
+	private CodeService codeService;
 
-    @Override
-    public ResponseEntity<Suite> createTestSuite(Principal principal, @Valid Suite suite) {
-        String authorId = Utils.getAuthToken(principal).getSubject();       // Get author id from token
-        suite.setAuthorId(authorId);        // Set author id
-        suite.setUpvotes(0);                // Set upvote count to 0
+	@Override
+	public ResponseEntity<Suite> createTestSuite(Principal principal, @Valid Suite suite) {
+		String authorId = Utils.getAuthToken(principal).getSubject(); // Get author id from token
+		suite.setAuthorId(authorId); // Set author id
+		suite.setUpvotes(0); // Set upvote count to 0
 
-        return new ResponseEntity<>(suiteService.createSuite(suite), HttpStatus.CREATED);
-    }
+		return new ResponseEntity<>(suiteService.createSuite(suite), HttpStatus.CREATED);
+	}
 
-    @Override
-    public ResponseEntity<FileUploadEvent> setTestSuiteFile(Principal principal, Integer suiteId, MultipartFile file) throws IOException {
-        AccessToken token = Utils.getAuthToken(principal);      // Get request token
+	@Override
+	public ResponseEntity<FileUploadEvent> setTestSuiteFile(Principal principal, Integer suiteId, MultipartFile file)
+			throws IOException {
+		AccessToken token = Utils.getAuthToken(principal); // Get request token
 
-        // Verify that the user uploading the file is the same as created the suite
-        Suite suite = suiteService.getSuiteById(suiteId);
-        if(!Utils.isAuthorOrAdmin(token, suite.getAuthorId())) throw new AccessDeniedException("Access Denied");
+		// Verify that the user uploading the file is the same as created the suite
+		Suite suite = suiteService.getSuiteById(suiteId);
+		if (!Utils.isAuthorOrAdmin(token, suite.getAuthorId()))
+			throw new AccessDeniedException("Access Denied");
 
-        // Save file uploaded to repository
-        SuiteFile suiteFile = suiteService.setSuiteTestFile(suiteId, token.getSubject(), file);
-        // Create confirmation upload event
-        FileUploadEvent resp = new FileUploadEvent();
-        resp.addFile(suiteFile.getFileName(), suiteFile.getFileSize());
-        return new ResponseEntity<>(resp, HttpStatus.OK);
-    }
+		// Save file uploaded to repository
+		SuiteFile suiteFile = suiteService.setSuiteTestFile(suiteId, token.getSubject(), file);
+		// Create confirmation upload event
+		FileUploadEvent resp = new FileUploadEvent();
+		resp.addFile(suiteFile.getFileName(), suiteFile.getFileSize());
+		return new ResponseEntity<>(resp, HttpStatus.OK);
+	}
 
-    @Override
-    public ResponseEntity<SuitePage> getTestSuites(Pageable pageable, Integer id, Integer assignmentId, String name, String lang) {
-        // Convert lang to PLanguage
-        PLanguage pLanguage = Utils.parsePLanguage(lang);
-        // Retrieve results using service
-        SuitePage page = new SuitePage(suiteService.getSuites(pageable, id, assignmentId, name, pLanguage, null));
-        return new ResponseEntity<>(page, HttpStatus.OK);
-    }
+	@Override
+	public ResponseEntity<SuitePage> getTestSuites(
+			Pageable pageable,
+			Integer id,
+			Integer assignmentId,
+			String name,
+			String lang) {
+		// Convert lang to PLanguage
+		PLanguage pLanguage = Utils.parsePLanguage(lang);
+		// Retrieve results using service
+		SuitePage page = new SuitePage(suiteService.getSuites(pageable, id, assignmentId, name, pLanguage, null));
+		return new ResponseEntity<>(page, HttpStatus.OK);
+	}
 
-    @Override
-    public ResponseEntity<FileInfo> getTestSuiteFile(Integer suiteId) {
-        SuiteFile suiteFile = suiteService.getSuiteTestFile(suiteId);
-        return new ResponseEntity<>(new FileInfo(suiteFile.getFileName(), suiteFile.getFileSize(), new String(suiteFile.getContent(), StandardCharsets.UTF_8)), HttpStatus.OK);
-    }
+	@Override
+	public ResponseEntity<FileInfo> getTestSuiteFile(Integer suiteId) {
+		SuiteFile suiteFile = suiteService.getSuiteTestFile(suiteId);
+		return new ResponseEntity<>(
+				new FileInfo(
+						suiteFile.getFileName(), suiteFile.getFileSize(),
+						new String(suiteFile.getContent(), StandardCharsets.UTF_8)),
+				HttpStatus.OK);
+	}
 
-    @Override
-    public void deleteTestSuite(Principal principal, Integer suiteId) {
-        AccessToken token = Utils.getAuthToken(principal);              // Get request token
-        Suite suiteToDelete = suiteService.getSuiteById(suiteId);       // Find suite to delete
+	@Override
+	public void deleteTestSuite(Principal principal, Integer suiteId) {
+		AccessToken token = Utils.getAuthToken(principal); // Get request token
+		Suite suiteToDelete = suiteService.getSuiteById(suiteId); // Find suite to delete
 
-        // Check that user deleting is author or admin
-        if(!Utils.isAuthorOrAdmin(token, suiteToDelete.getAuthorId())) throw new AccessDeniedException("Access Denied");
-        // If allowed, delete the test suite
-        suiteService.deleteSuite(suiteId);
-    }
+		// Check that user deleting is author or admin
+		if (!Utils.isAuthorOrAdmin(token, suiteToDelete.getAuthorId()))
+			throw new AccessDeniedException("Access Denied");
+		// If allowed, delete the test suite
+		suiteService.deleteSuite(suiteId);
+	}
 
-    @Override
-    @RolesAllowed("ROLE_SYS")
-    public void voteOnTestSuite(Integer suiteId, String action) {
-        // Convert action to VoteAction
-        VoteAction voteAction = Utils.parseVoteAction(action);
-        suiteService.updateSuiteUpvotes(suiteId, voteAction);
-    }
+	@Override
+	@RolesAllowed("ROLE_SYS")
+	public void voteOnTestSuite(Integer suiteId, String action) {
+		// Convert action to VoteAction
+		VoteAction voteAction = Utils.parseVoteAction(action);
+		suiteService.updateSuiteUpvotes(suiteId, voteAction);
+	}
 
-    @Override
-    public ResponseEntity<ResponseBodyEmitter> runTestSuite(Principal principal, Integer suiteId, List<Integer> ids, Integer limit, Integer submissionId) {
-        Suite suite = suiteService.getSuiteById(suiteId);                   // Get suite with id
-        SuiteFile suiteFile = suiteService.getSuiteTestFile(suiteId);       // Get suiteFile with suite id
-        String authorId = Utils.getAuthToken(principal).getSubject();       // Get requester's authorId
+	@Override
+	public ResponseEntity<ResponseBodyEmitter> runTestSuite(
+			Principal principal,
+			Integer suiteId,
+			List<Integer> ids,
+			Integer limit,
+			Integer submissionId) {
+		Suite suite = suiteService.getSuiteById(suiteId); // Get suite with id
+		SuiteFile suiteFile = suiteService.getSuiteTestFile(suiteId); // Get suiteFile with suite id
+		String authorId = Utils.getAuthToken(principal).getSubject(); // Get requester's authorId
 
-        // Find submission by id if present, otherwise find the latest submission
-        Submission submission = submissionId != null
-                ? submissionService.getSubmissionById(submissionId)
-                : submissionService.getLatestSubmissionForAssignment(authorId, suite.getAssignmentId());
+		// Find submission by id if present, otherwise find the latest submission
+		Submission submission = submissionId != null ? submissionService.getSubmissionById(submissionId)
+				: submissionService.getLatestSubmissionForAssignment(authorId, suite.getAssignmentId());
 
-        final int DEFAULT_LIMIT = 20;
-        // Get the list of test cases to run. If no ids are provided take the top x ranked by upvotes, where x is limit (default 20)
-        List<Case> cases;
-        if(ids == null || ids.size() == 0) {
-            int maxCaseCount = limit == null ? DEFAULT_LIMIT : limit;
-            Pageable pageable = PageRequest.of(0, maxCaseCount, Sort.Direction.DESC, Case_.UPVOTES);
-            cases = caseService.getCases(pageable, null, suiteId, null, null, null).getContent();
-        } else {
-            cases = caseService.getCases(ids, suiteId);
-        }
-        // Create emitter to send back results
-        final ResponseBodyEmitter emitter = new ResponseBodyEmitter();
-        emitter.onError(throwable -> {
-            log.error(String.format("Failed to run test cases for suite %d with exception %s", suiteId, throwable.getLocalizedMessage()));
-        });
-        emitter.onCompletion(() -> {
-            log.info(String.format("Successfully ran test cases for suite %d", suiteId));
-        });
-        codeService.asyncRunTestCasesInSuite(emitter, submission, suite, suiteFile, cases);
+		final int DEFAULT_LIMIT = 20;
+		// Get the list of test cases to run. If no ids are provided take the top x ranked by upvotes, where
+		// x is limit (default 20)
+		List<Case> cases;
+		if (ids == null || ids.size() == 0) {
+			int maxCaseCount = limit == null ? DEFAULT_LIMIT : limit;
+			Pageable pageable = PageRequest.of(0, maxCaseCount, Sort.Direction.DESC, Case_.UPVOTES);
+			cases = caseService.getCases(pageable, null, suiteId, null, null, null).getContent();
+		} else {
+			cases = caseService.getCases(ids, suiteId);
+		}
+		// Create emitter to send back results
+		final ResponseBodyEmitter emitter = new ResponseBodyEmitter();
+		emitter.onError(throwable -> {
+			String errMsg = "Failed to run test cases for suite %d with exception %s";
+			log.error(String.format(errMsg, suiteId, throwable.getLocalizedMessage()));
+		});
+		emitter.onCompletion(() -> {
+			log.info(String.format("Successfully ran test cases for suite %d", suiteId));
+		});
+		codeService.asyncRunTestCasesInSuite(emitter, submission, suite, suiteFile, cases);
 
-        return new ResponseEntity<>(emitter, HttpStatus.OK);
-    }
+		return new ResponseEntity<>(emitter, HttpStatus.OK);
+	}
 }

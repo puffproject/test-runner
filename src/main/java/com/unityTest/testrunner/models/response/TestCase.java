@@ -15,35 +15,35 @@ import lombok.Data;
 @Data
 public class TestCase {
 
-    @ApiModelProperty(value = "Id", required = true)
-    private int id;
+	@ApiModelProperty(value = "Id", required = true)
+	private int id;
 
-    // Test suite that the test case belongs to
-    @ApiModelProperty(value = "Test suite", required = true)
-    private Suite suite;
+	// Test suite that the test case belongs to
+	@ApiModelProperty(value = "Test suite", required = true)
+	private Suite suite;
 
-    // Description of test case
-    @ApiModelProperty(value = "Test case description", example = "Tests boundary case if x = 0")
-    private String description;
+	// Description of test case
+	@ApiModelProperty(value = "Test case description", example = "Tests boundary case if x = 0")
+	private String description;
 
-    // Programming language of test case
-    @ApiModelProperty(value = "Language", required = true, example = "JAVA")
-    private PLanguage language;
+	// Programming language of test case
+	@ApiModelProperty(value = "Language", required = true, example = "JAVA")
+	private PLanguage language;
 
-    // Author information of test case
-    @ApiModelProperty(value = "Author name", required = true)
-    private Author author;
+	// Author information of test case
+	@ApiModelProperty(value = "Author name", required = true)
+	private Author author;
 
-    // Engagement stats for the test case, upvotes, comment count etc.
-    @ApiModelProperty(value = "Engagement statistics", required = true)
-    // TODO Change this to engagement using course-management endpoints
-    private int upvotes;
+	// Engagement stats for the test case, upvotes, comment count etc.
+	@ApiModelProperty(value = "Engagement statistics", required = true)
+	// TODO Change this to engagement using course-management endpoints
+	private int upvotes;
 
-    // Statistics for the test case, run count, pass count etc.
-    @ApiModelProperty(value = "Test case statistics", required = true)
-    private CaseStats stats;
+	// Statistics for the test case, run count, pass count etc.
+	@ApiModelProperty(value = "Test case statistics", required = true)
+	private CaseStats stats;
 
-    // Code snippet that runs with the test case
-    @ApiModelProperty(value = "Test case code", required = true)
-    private String code;
+	// Code snippet that runs with the test case
+	@ApiModelProperty(value = "Test case code", required = true)
+	private String code;
 }

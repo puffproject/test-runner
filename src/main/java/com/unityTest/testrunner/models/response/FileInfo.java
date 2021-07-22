@@ -18,18 +18,18 @@ import javax.validation.constraints.NotBlank;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FileInfo {
 
-    @NotBlank
-    @ApiModelProperty(value = "File name", required = true, example = "Test.hs")
-    private String name;
+	@NotBlank
+	@ApiModelProperty(value = "File name", required = true, example = "Test.hs")
+	private String name;
 
-    @ApiModelProperty(value = "File size", example = "1245")
-    private long size;
+	@ApiModelProperty(value = "File size", example = "1245")
+	private long size;
 
-    @ApiModelProperty(value = "File contents")
-    private String content;
+	@ApiModelProperty(value = "File contents")
+	private String content;
 
-    public FileInfo(String name, long size) {
-        this.name = name;
-        this.size = size;
-    }
+	public FileInfo(String name, long size) {
+		this.name = name;
+		this.size = size;
+	}
 }
