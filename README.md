@@ -114,7 +114,7 @@ The codebase is auto-formatted with the [formatter-maven-plugin](https://code.re
 
 Run the `mvn formatter:format` command to run the formatter. It is also bound to the `format` goal that will run as part of the `compile` phase. 
 
-You can also add the git [pre-commit](./hooks/pre-commit) hook to your local `.git/hooks` folder to run the formatter on pre-commit.
+You can also add the git [pre-commit](.hooks/pre-commit) hook to your local `.git/hooks` folder to run the formatter on pre-commit.
 
 ### Docker
 
