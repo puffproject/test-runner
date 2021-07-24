@@ -51,9 +51,18 @@ public class DockerService {
 	@Value("${docker.build.python3.entry}")
 	private String pythonEntryFilePath;
 
+	@Getter
+	@Value("${docker.build.haskell.dockerfile}")
+	private String haskellDockerFilePath;
+
+	@Getter
+	@Value("${docker.build.haskell.entry}")
+	private String haskellEntryFilePath;
+
+
 	/**
 	 * Build a docker image with the name image:tag from the working directory
-	 * 
+	 *
 	 * @param image Image name
 	 * @param tag Image tag
 	 * @param workingDir Working directory from which to run the `docker build` command
@@ -105,7 +114,7 @@ public class DockerService {
 
 	/**
 	 * Run a test case in an isolated docker container
-	 * 
+	 *
 	 * @param caze Test case to run
 	 * @param image Image from which to build the docker container
 	 * @param envPath Resource path to environment file containing env values to pass to container
@@ -200,28 +209,27 @@ public class DockerService {
 	}
 
 	public void stopDockerContainer(String name, int timeout) {
-		String[] cmd = {"docker", "stop", "-t", String.valueOf(timeout), name};
-		String infoMsg = "Stopping docker container %s after a timeout of %d seconds with command: %s";
-		log.info(String.format(infoMsg, name, timeout, String.join(" ", cmd)));
+    String[] cmd = {"docker", "stop", "-t", String.valueOf(timeout), name};
+    String infoMsg = "Stopping docker container %s after a timeout of %d seconds with command: %s";
+    log.info(String.format(infoMsg, name, timeout, String.join(" ", cmd)));
 
-		ProcessBuilder pb = new ProcessBuilder(cmd).redirectErrorStream(true);
-		try {
-			Process p = pb.start();
-			InputStream stream = p.getInputStream(); // Capture the process output
-			// Wait for process to finish
-			p.waitFor();
-			if (p.exitValue() != 0) {
-				String output = IOUtils.toString(stream, StandardCharsets.UTF_8);
-				String warnMsg = "Failed to stop docker container %s. Command exited with value %d and output\n%s";
-				log.warn(String.format(warnMsg, name, p.exitValue(), output));
-			} else {
-				log.info(String.format("Successfully stopped docker container %s", name));
-			}
-			stream.close();
-		} catch (IOException | InterruptedException e) {
-			String warnMsg = "Failed to stop docker container %s. Threw exception %s";
-			log.warn(String.format(warnMsg, name, e.getLocalizedMessage()));
-			e.printStackTrace();
-		}
-	}
-}
+    ProcessBuilder pb = new ProcessBuilder(cmd).redirectErrorStream(true);
+    try {
+      Process p = pb.start();
+      InputStream stream = p.getInputStream(); // Capture the process output
+      // Wait for process to finish
+      p.waitFor();
+      if (p.exitValue() != 0) {
+        String output = IOUtils.toString(stream, StandardCharsets.UTF_8);
+        String warnMsg = "Failed to stop docker container %s. Command exited with value %d and output\n%s";
+        log.warn(String.format(warnMsg, name, p.exitValue(), output));
+      } else {
+        log.info(String.format("Successfully stopped docker container %s", name));
+      }
+      stream.close();
+    } catch (IOException | InterruptedException e) {
+      String warnMsg = "Failed to stop docker container %s. Threw exception %s";
+      log.warn(String.format(warnMsg, name, e.getLocalizedMessage()));
+      e.printStackTrace();
+    }
+  }
