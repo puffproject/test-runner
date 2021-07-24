@@ -1,12 +1,14 @@
 FROM haskell:8
-# TODO FIND A SMALLER BASE IMAGE TO RUN ON ALPINE
-# TODO ADD ANY OTHER DEPENDENCIES
+RUN stack install HUnit
 
 ARG DIR
+ARG USER=jeff # Consider making this an env variable
 WORKDIR $DIR
-USER root
+RUN adduser $USER
 
+## `haskell_entry.sh` will be at `/code/haskell_entry.sh`
+
+USER $USER
 ADD . .
-RUN chmod a+x haskell_entry.sh
-
-ENTRYPOINT ["sh", "haskell_entry.sh"]
+# This build the project and run the tests
+ENTRYPOINT ["sh", "hakell_entry.sh"]
