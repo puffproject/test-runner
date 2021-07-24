@@ -12,9 +12,9 @@ import lombok.Data;
 @Data
 @ApiModel(value = "Author")
 public class Author {
-    @ApiModelProperty(value = "First name", example = "John")
-    private String firstname;
+	@ApiModelProperty(value = "First name", example = "John")
+	private String firstname;
 
-    @ApiModelProperty(value = "Last name", example = "Deer")
-    private String lastname;
+	@ApiModelProperty(value = "Last name", example = "Deer")
+	private String lastname;
 }

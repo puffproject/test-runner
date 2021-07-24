@@ -10,5 +10,5 @@ import java.util.Optional;
 
 @Repository
 public interface SubmissionRepository extends JpaRepository<Submission, Integer>, JpaSpecificationExecutor<Submission> {
-    Optional<Submission> findTopByAuthorIdAndAssignmentIdOrderByIdDesc(String authorId, int assignmentId);
+	Optional<Submission> findTopByAuthorIdAndAssignmentIdOrderByIdDesc(String authorId, int assignmentId);
 }

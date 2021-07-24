@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 
 @ApiModel(value = "SuitePage", description = "Page request for test suites")
 public class SuitePage extends BasePage<Suite> {
-    public SuitePage(Page<Suite> page) {
-        super(page);
-    }
+	public SuitePage(Page<Suite> page) {
+		super(page);
+	}
 }

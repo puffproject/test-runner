@@ -31,76 +31,77 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class SuiteApiTests {
 
-    @Autowired
-    private Filter springSecurityFilterChain;
+	@Autowired
+	private Filter springSecurityFilterChain;
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @Autowired
-    private WebApplicationContext context;
+	@Autowired
+	private WebApplicationContext context;
 
-    @Autowired
-    private SuiteRepository suiteRepository;
+	@Autowired
+	private SuiteRepository suiteRepository;
 
-    private final String baseUri = "/suite";
+	private final String baseUri = "/suite";
 
-    @AfterEach
-    void cleanupDB() {
-        suiteRepository.deleteAll();
-    }
+	@AfterEach
+	void cleanupDB() {
+		suiteRepository.deleteAll();
+	}
 
-    //TODO Figure out mocking authentication tokens
-//    @BeforeEach
-//    void setup() {
-//        mockMvc = MockMvcBuilders
-//                .webAppContextSetup(context)
-//                .defaultRequest(get("/").secure(true).with(testSecurityContext()))
-//                .addFilters(springSecurityFilterChain)
-//                .apply(springSecurity())
-//                .build();
-//    }
-//    @Test
-//    void createSuite_Authenticated() throws Exception {
-//        final var principal = mock(Principal.class);
-//        when(principal.getName()).thenReturn("sherman");
-//
-//        final var account = mock(OidcKeycloakAccount.class);
-//
-//        when(account.getRoles()).thenReturn(new HashSet<>(Arrays.asList("USER", "ADMIN", "ROLE_USER", "user", "offline_access", "uma_authorization")));
-//        when(account.getPrincipal()).thenReturn(principal);
-//
-//        final var authentication = mock(KeycloakAuthenticationToken.class);
-//        when(authentication.getAccount()).thenReturn(account);
-//
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        final Suite suiteToCreate = new Suite(0, 100, "CREATE_SUITE", PLanguage.JAVA, 12, null);
-//
-//        // Perform POST request
-//        MvcResult result = mockMvc
-//                .perform(post(this.baseUri, suiteToCreate))
-//                .andExpect(status().isCreated())
-//                .andReturn();
-//        System.out.println(result.getResponse().getContentAsString());
-//    }
+	// TODO Figure out mocking authentication tokens
+	// @BeforeEach
+	// void setup() {
+	// mockMvc = MockMvcBuilders
+	// .webAppContextSetup(context)
+	// .defaultRequest(get("/").secure(true).with(testSecurityContext()))
+	// .addFilters(springSecurityFilterChain)
+	// .apply(springSecurity())
+	// .build();
+	// }
+	// @Test
+	// void createSuite_Authenticated() throws Exception {
+	// final var principal = mock(Principal.class);
+	// when(principal.getName()).thenReturn("sherman");
+	//
+	// final var account = mock(OidcKeycloakAccount.class);
+	//
+	// when(account.getRoles()).thenReturn(new HashSet<>(Arrays.asList("USER", "ADMIN", "ROLE_USER",
+	// "user", "offline_access", "uma_authorization")));
+	// when(account.getPrincipal()).thenReturn(principal);
+	//
+	// final var authentication = mock(KeycloakAuthenticationToken.class);
+	// when(authentication.getAccount()).thenReturn(account);
+	//
+	// SecurityContextHolder.getContext().setAuthentication(authentication);
+	//
+	// final Suite suiteToCreate = new Suite(0, 100, "CREATE_SUITE", PLanguage.JAVA, 12, null);
+	//
+	// // Perform POST request
+	// MvcResult result = mockMvc
+	// .perform(post(this.baseUri, suiteToCreate))
+	// .andExpect(status().isCreated())
+	// .andReturn();
+	// System.out.println(result.getResponse().getContentAsString());
+	// }
 
-    @Test
-    void createSuite_ValidArg_SaveSuiteToRepo() throws Exception {
-        // TODO MOVE THIS INTO ANNOTATION WITH PROPER AUTH
-        // Mock the principal
-        KeycloakAuthenticationToken authentication = mock(KeycloakAuthenticationToken.class, RETURNS_DEEP_STUBS);
-        AccessToken accessToken = mock(AccessToken.class);
-        when(authentication.getAccount().getKeycloakSecurityContext().getToken()).thenReturn(accessToken);
-        when(accessToken.getSubject()).thenReturn("TEST_USERNAME");
+	@Test
+	void createSuite_ValidArg_SaveSuiteToRepo() throws Exception {
+		// TODO MOVE THIS INTO ANNOTATION WITH PROPER AUTH
+		// Mock the principal
+		KeycloakAuthenticationToken authentication = mock(KeycloakAuthenticationToken.class, RETURNS_DEEP_STUBS);
+		AccessToken accessToken = mock(AccessToken.class);
+		when(authentication.getAccount().getKeycloakSecurityContext().getToken()).thenReturn(accessToken);
+		when(accessToken.getSubject()).thenReturn("TEST_USERNAME");
 
-        final Suite suiteToCreate = new Suite(0, 100, "CREATE_SUITE", PLanguage.JAVA, 12, null);
+		final Suite suiteToCreate = new Suite(0, 100, "CREATE_SUITE", PLanguage.JAVA, 12, null);
 
-        // Perform POST request
-        MvcResult result = mockMvc
-                .perform(post(this.baseUri, suiteToCreate).principal(authentication))
-                .andExpect(status().isCreated())
-                .andReturn();
-        System.out.println(result.getResponse().getContentAsString());
-    }
+		// Perform POST request
+		MvcResult result = mockMvc
+			.perform(post(this.baseUri, suiteToCreate).principal(authentication))
+			.andExpect(status().isCreated())
+			.andReturn();
+		System.out.println(result.getResponse().getContentAsString());
+	}
 }

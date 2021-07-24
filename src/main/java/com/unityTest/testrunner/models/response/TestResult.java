@@ -11,12 +11,12 @@ import lombok.Data;
 @Data
 public class TestResult {
 
-    @ApiModelProperty(value = "Id of case run")
-    private int caseId;
+	@ApiModelProperty(value = "Id of case run")
+	private int caseId;
 
-    @ApiModelProperty(value = "Status of running case")
-    private ResultStatus status;
+	@ApiModelProperty(value = "Status of running case")
+	private ResultStatus status;
 
-    @ApiModelProperty(value = "Result message")
-    private String message;
+	@ApiModelProperty(value = "Result message")
+	private String message;
 }

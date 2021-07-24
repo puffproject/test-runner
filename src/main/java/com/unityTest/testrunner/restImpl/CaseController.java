@@ -32,59 +32,71 @@ import java.util.List;
 @RestController
 public class CaseController implements CaseApi {
 
-    @Autowired
-    private CaseService caseService;
+	@Autowired
+	private CaseService caseService;
 
-    @Autowired
-    private KeycloakService keycloakService;
+	@Autowired
+	private KeycloakService keycloakService;
 
-    @Override
-    public ResponseEntity<TestCase> createTestCase(Principal principal, @Valid TestCaseInfo testCaseInfo) {
-        AccessToken accessToken = Utils.getAuthToken(principal);                            // Extract access token in request
-        Author author = new Author(accessToken.getGivenName(), accessToken.getFamilyName());     // Construct author from access token
+	@Override
+	public ResponseEntity<TestCase> createTestCase(Principal principal, @Valid TestCaseInfo testCaseInfo) {
+		AccessToken accessToken = Utils.getAuthToken(principal); // Extract access token in request
+		// Construct author from access token
+		Author author = new Author(accessToken.getGivenName(), accessToken.getFamilyName());
 
-        // Save case to repo and return case as TestCase response object
-        return new ResponseEntity<>(caseService.createCase(testCaseInfo, accessToken.getSubject()).toTestCase(author), HttpStatus.CREATED);
-    }
+		// Save case to repo and return case as TestCase response object
+		return new ResponseEntity<>(
+				caseService.createCase(testCaseInfo, accessToken.getSubject()).toTestCase(author), HttpStatus.CREATED);
+	}
 
-    @Override
-    public ResponseEntity<TestCasePage> getTestCases(Pageable pageable, Integer id, Integer suiteId, String functionName, String lang) {
-        // Convert lang to PLanguage
-        PLanguage pLanguage = Utils.parsePLanguage(lang);
-        // Retrieve results using service
-        Page<Case> casePage = caseService.getCases(pageable, id, suiteId, functionName, pLanguage, null);
-        TestCasePage page = new TestCasePage(casePage, keycloakService.getConnection(), keycloakService.getRealmName());
-        return new ResponseEntity<>(page, HttpStatus.OK);
-    }
+	@Override
+	public ResponseEntity<TestCasePage> getTestCases(
+			Pageable pageable,
+			Integer id,
+			Integer suiteId,
+			String functionName,
+			String lang) {
+		// Convert lang to PLanguage
+		PLanguage pLanguage = Utils.parsePLanguage(lang);
+		// Retrieve results using service
+		Page<Case> casePage = caseService.getCases(pageable, id, suiteId, functionName, pLanguage, null);
+		TestCasePage page = new TestCasePage(casePage, keycloakService.getConnection(), keycloakService.getRealmName());
+		return new ResponseEntity<>(page, HttpStatus.OK);
+	}
 
-    @Override
-    public ResponseEntity<TestCase> updateTestCase(Principal principal, Integer caseId, @Valid TestCaseInfo testCaseInfo) {
-        AccessToken token = Utils.getAuthToken(principal);      // Get request token
-        Case caseToUpdate = caseService.getCaseById(caseId);    // Find case to update
-        Author author = new Author(token.getGivenName(), token.getFamilyName());     // Construct author from access token
+	@Override
+	public ResponseEntity<TestCase> updateTestCase(
+			Principal principal,
+			Integer caseId,
+			@Valid TestCaseInfo testCaseInfo) {
+		AccessToken token = Utils.getAuthToken(principal); // Get request token
+		Case caseToUpdate = caseService.getCaseById(caseId); // Find case to update
+		Author author = new Author(token.getGivenName(), token.getFamilyName()); // Construct author from access token
 
-        // Check if user is owner or admin
-        if(!Utils.isAuthorOrAdmin(token, caseToUpdate.getAuthorId())) throw new AccessDeniedException("Access Denied");
-        // Update case and return updated case
-        return new ResponseEntity<>(caseService.updateCase(caseId, testCaseInfo).toTestCase(author), HttpStatus.OK);
-    }
+		// Check if user is owner or admin
+		if (!Utils.isAuthorOrAdmin(token, caseToUpdate.getAuthorId()))
+			throw new AccessDeniedException("Access Denied");
+		// Update case and return updated case
+		return new ResponseEntity<>(caseService.updateCase(caseId, testCaseInfo).toTestCase(author), HttpStatus.OK);
+	}
 
-    @Override
-    public void deleteTestCase(Principal principal, Integer caseId) {
-        AccessToken token = Utils.getAuthToken(principal);              // Get request token
-        Case caseToDelete = caseService.getCaseById(caseId);            // Find case to delete
+	@Override
+	public void deleteTestCase(Principal principal, Integer caseId) {
+		AccessToken token = Utils.getAuthToken(principal); // Get request token
+		Case caseToDelete = caseService.getCaseById(caseId); // Find case to delete
 
-        // Check if user deleting is not the author or admin
-        if(!Utils.isAuthorOrAdmin(token, caseToDelete.getAuthorId())) throw new AccessDeniedException("Access Denied");
-        // If allowed, delete the test case
-        caseService.deleteCase(caseId);
-    }
+		// Check if user deleting is not the author or admin
+		if (!Utils.isAuthorOrAdmin(token, caseToDelete.getAuthorId()))
+			throw new AccessDeniedException("Access Denied");
+		// If allowed, delete the test case
+		caseService.deleteCase(caseId);
+	}
 
-    @Override
-    @RolesAllowed("ROLE_SYS")
-    public void voteOnTestCase(Integer caseId, String action) {
-        // Convert action to VoteAction
-        VoteAction voteAction = Utils.parseVoteAction(action);
-        caseService.updateCaseUpvotes(caseId, voteAction);
-    }
+	@Override
+	@RolesAllowed("ROLE_SYS")
+	public void voteOnTestCase(Integer caseId, String action) {
+		// Convert action to VoteAction
+		VoteAction voteAction = Utils.parseVoteAction(action);
+		caseService.updateCaseUpvotes(caseId, voteAction);
+	}
 }
