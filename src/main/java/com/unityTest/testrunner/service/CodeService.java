@@ -37,7 +37,7 @@ public class CodeService {
 
 	/**
 	 * Asynchronously run a list of test cases in an isolated environment and send back the results
-	 * 
+	 *
 	 * @param emitter Emitter to send back results or errors
 	 * @param submission Code submission containing source files
 	 * @param suite Suite test cases belong to
@@ -67,7 +67,10 @@ public class CodeService {
 				entryFileName = DockerConstants.PYTHON_ENTRY_FILE;
 				break;
 			case HASKELL:
-				throw new UnsupportedProgrammingLanguageException(PLanguage.HASKELL);
+				imageName = DockerConstants.HASKELL_DOCKER_IMAGE_NAME;
+				dockerfilePath = dockerService.getHaskellDockerFilePath();
+				entryFilePath = dockerService.getHaskellEntryFilePath();
+				entryFileName = DockerConstants.HASKELL_ENTRY_FILE;
 			case JAVA:
 				throw new UnsupportedProgrammingLanguageException(PLanguage.JAVA);
 			default:
@@ -154,8 +157,7 @@ public class CodeService {
 				// TODO Implement java code builder
 				break;
 			case HASKELL:
-				// TODO Implement haskell code builder
-				break;
+				return buildHUnitTestFunction(functionName, functionBody);
 			case PYTHON3:
 				return buildPythonTestFunction(functionName, functionBody);
 			default:
@@ -182,5 +184,23 @@ public class CodeService {
 		final String def = String.format("def test_%s(self):\n", funcName);
 		// Create code block by indenting the body by one tab
 		return def.concat(Utils.indent(body, 1).concat("\n"));
+	}
+
+	private String buildHUnitTestFunction(String funcName, String body) {
+		StringBuilder resultBuilder = new StringBuilder();
+
+		// Main function
+		resultBuilder.append("\n\nmain :: IO ()\n");
+		resultBuilder.append("main = do\n");
+		resultBuilder.append("  executedTest <- runTestTT ");
+		resultBuilder.append(funcName);
+		resultBuilder.append("Test\n");
+		resultBuilder.append("  print executedTest\n\n");
+
+		// Test function
+		resultBuilder.append("test = ");
+		resultBuilder.append(body);
+		resultBuilder.append("/n");
+		return resultBuilder.toString();
 	}
 }
