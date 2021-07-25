@@ -94,7 +94,7 @@ See the below commands for running tests:
 ### Swagger
 _Puff_'s Spring-Boot backend exposes a REST API. The project utilizes [Swagger](https://swagger.io/) to document and keep a consistent REST interface.
 
-Once you have a microservice running (See [run the backend](#run-the-backend)) visit http://localhost:8083/swagger-ui.html. A `json` api version to be consumed and used to generate client libraries can be accessed at http://localhost:8083/v2/api-docs. 
+Once you have a microservice running (See [run the backend](#run-the-backend)) visit http://localhost:8083/swagger-ui.html. A `json` api version to be consumed and used to generate client libraries can be accessed at http://localhost:8083/v2/api-docs.
 
 Select `Authorize` and login with a test user account to try out any of the endpoints.
 
@@ -115,7 +115,7 @@ For more information about H2 databases see the [H2 Database Engine](https://www
 
 The codebase is auto-formatted with the [formatter-maven-plugin](https://code.revelc.net/formatter-maven-plugin/) that will format all source code files in the `src/` and `test/` directories according to the settings in the [style.xml](style.xml) file, which are based on eclipse profile settings.
 
-Run the `mvn formatter:format` command to run the formatter. It is also bound to the `format` goal that will run as part of the `compile` phase. 
+Run the `mvn formatter:format` command to run the formatter. It is also bound to the `format` goal that will run as part of the `compile` phase.
 
 You can also add the git [pre-commit](.hooks/pre-commit) hook to your local `.git/hooks` folder to run the formatter on pre-commit.
 
@@ -129,9 +129,9 @@ _Puff_ runs each test case in isolation with a multi-layered, zero-trust approac
 docker build --build-arg DIR=/code -t image_name:tag .
 ```
 
-The image is built on a base image for the programming language required. A new user `appuser` is provisioned and added to proper groups. All user code files required are copied from the working directory into the image. An entrypoint that will run the shell script containing the test command is configured. 
+The image is built on a base image for the programming language required. A new user `appuser` is provisioned and added to proper groups. All user code files required are copied from the working directory into the image. An entrypoint that will run the shell script containing the test command is configured.
 
-The following controls are applied: 
+The following controls are applied:
 
 * Docker image build timeout with Java thread timeout
 
@@ -140,7 +140,7 @@ The following controls are applied:
 docker run --rm -m 450M --name my_container --env-file .env -e OTHER_ENV_VALUE=XX -v path/to/test/file:/code/file:ro image_name
 ```
 
-The container is run as an executable with an environment supplied through an environment file. The container's entrypoint is the shell script containing the test command to run the test case. The test suite file containing the test cases to run is supplied through a read-only [volume](https://docs.docker.com/storage/volumes/) which is modified by _Puff_ for each test case. 
+The container is run as an executable with an environment supplied through an environment file. The container's entrypoint is the shell script containing the test command to run the test case. The test suite file containing the test cases to run is supplied through a read-only [volume](https://docs.docker.com/storage/volumes/) which is modified by _Puff_ for each test case.
 
 The following controls are applied:
 
@@ -169,20 +169,20 @@ from pytest import *    # Python import REQUIRED
 ## Name MUST start with Test* for it to be recognized
 class TestFunc:
 
-	def setup_method(self, method):
-		# Setup any values test cases should have access to
-		# e.g. self.x = 2
-		pass
+    def setup_method(self, method):
+        # Setup any values test cases should have access to
+        # e.g. self.x = 2
+        pass
 
-	def teardown_method(self, method):
-		# Teardown any values setup
-		pass
-	
-	## There are other methods that pytest can take advantage of
-	# For more information see https://docs.pytest.org/en/6.2.x/getting-started.html#create-your-first-test
+    def teardown_method(self, method):
+        # Teardown any values setup
+        pass
 
-	## All other test cases defined with be appended here
-	# ...
+    ## There are other methods that pytest can take advantage of
+    # For more information see https://docs.pytest.org/en/6.2.x/getting-started.html#create-your-first-test
+
+    ## All other test cases defined with be appended here
+    # ...
 ```
 
 Users will then upload test cases as part of the suite. Once users upload source files they can run those test cases using your suite file against their uploaded source code.
@@ -223,11 +223,11 @@ from Func import *
 ## Test class for some function
 class TestFunc:
 
-	def setup_method(self, method):
-		self.x = 2
+    def setup_method(self, method):
+        self.x = 2
 
-	def teardown_method(self, method):
-		pass
+    def teardown_method(self, method):
+        pass
 ```
 
 Run the follow curl command to set the file for the test suite.
@@ -243,7 +243,7 @@ curl --header "Content-Type: multipart/form-data" \
 Next, create a `Func.py` file with a single function:
 ```python
 def getX():
-	return 2
+    return 2
 ```
 
 Upload your `Func.py` file as the "source code" for your project you want to test:
@@ -259,7 +259,7 @@ curl --header "Content-Type: multipart/form-data" \
 Next upload the code for a test case you want to run. We'll check that the value returned from `getX()` in `Func.py` is equal to 2. Our test case will look like
 ```python
 def test_isTwo(self):
-	assert self.x == getX()
+    assert self.x == getX()
 ```
 
  Create the test case in the test suite with the following call:
@@ -286,11 +286,46 @@ curl --header "Content-Type: application/json" \
 You should receive a json response matching something like the following:
 ```
 {
-	"caseId": {CASE_ID},
-	"status": "PASS",
-	"message": ...
+    "caseId": {CASE_ID},
+    "status": "PASS",
+    "message": ...
 }
 ```
+
+### Haskell
+
+Haskell testing uses [HUnit](https://hackage.haskell.org/package/HUnit) to run tests.
+
+The same procedure followed for [Python 3](#Python 3) can be followed here with some notable differences
+
+The differences are:
+
+1. The Suite file to be passed must import the main program file.
+2. A `main` function is automatically created, so the uploaded file **must not** contain one.
+3. The file automatically fully imports and exposes `HUnit` package, so avoid any conflicting symbols and names.
+4. The generated file should like something like this:
+
+```haskell
+{-
+The contents for the uploaded suite file
+This must include the module declaration.
+Must import the program file, the main submission.
+-}
+
+import HUnit
+
+main :: IO ()
+main = do
+  executedTest <- runTestTT test_{func_name}
+  print executedTest
+
+
+test_{func_name} :: Test
+test_{func_name} = {func_body}
+```
+
+5. The test file name must match the module name. If you named the suite file `TestSuite.hs` the module declaration must read `module TestSuite where`.
+6. The suite file name be a valid module name.
 
 ## Contributors
 The _Puff_ project is looking for contributors to join the initiative!
