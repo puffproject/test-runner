@@ -78,7 +78,7 @@ runner:
 docker:
   build:
     dir: /code    # Working directory to construct in docker image
-    timeout: 10    # Timeout, in seconds, of docker build process
+    timeout: 300    # Timeout, in seconds, of docker build process
     python3:
       entry: /runner/docker/python3/python_entry.sh
       dockerfile: /runner/docker/python3/Dockerfile
