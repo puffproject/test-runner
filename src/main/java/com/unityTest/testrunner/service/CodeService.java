@@ -203,6 +203,9 @@ public class CodeService {
 	private String buildHUnitTestFunction(String funcName, String body) {
 		StringBuilder resultBuilder = new StringBuilder();
 
+		// Importing Hunit
+		resultBuilder.append("import HUnit");
+
 		// Main function
 		resultBuilder.append("\n\nmain :: IO ()\n");
 		resultBuilder.append("main = do\n");
