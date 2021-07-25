@@ -193,15 +193,16 @@ public class CodeService {
 		// Main function
 		resultBuilder.append("\n\nmain :: IO ()\n");
 		resultBuilder.append("main = do\n");
-		resultBuilder.append("  executedTest <- runTestTT ");
+		resultBuilder.append("  executedTest <- runTestTT test_");
 		resultBuilder.append(funcName);
-		resultBuilder.append("Test\n");
+		resultBuilder.append("\n");
 		resultBuilder.append("  print executedTest\n\n");
 
 		// Test function
-		resultBuilder.append("test = ");
+		resultBuilder.append("test_");
+		resultBuilder.append(funcName);
+		resultBuilder.append(" = ");
 		resultBuilder.append(body);
-		resultBuilder.append("/n");
 		return resultBuilder.toString();
 	}
 }
