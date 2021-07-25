@@ -20,6 +20,9 @@
 
 # Test-runner
 
+[![Build & Tests](https://img.shields.io/github/workflow/status/puffproject/test-runner/Build%20&%20Test?label=build%20%26%20tests)](https://github.com/puffproject/test-runner/actions/workflows/build.yml)
+[![Code coverage](https://codecov.io/gh/puffproject/test-runner/branch/master/graph/badge.svg?token=YRCB9LTSNC)](https://codecov.io/gh/puffproject/test-runner)
+
 Spring-boot microservice managing user code uploads and running test cases for the puff platform. For the full overview of the puff project see the [docs repository](https://github.com/puffproject/docs).
 
 ## Getting started
