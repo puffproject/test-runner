@@ -175,7 +175,20 @@ public class CodeService {
 		bos.write(suiteFile.getContent());
 		// Write test case content to file depending on language
 		// TODO FIX THIS
-		bos.write(String.format("\n%s", Utils.indent(caze.getCode(), 1)).getBytes());
+		switch (lang) {
+			case JAVA:
+				// TODO;
+				break;
+			case HASKELL:
+				bos.write(caze.getCode().getBytes());
+				break;
+			case PYTHON3:
+				bos.write(String.format("\n%s", Utils.indent(caze.getCode(), 1)).getBytes());
+				break;
+			default:
+				bos.close();
+				throw new UnsupportedProgrammingLanguageException(lang);
+		}
 		bos.flush();
 		bos.close();
 	}
