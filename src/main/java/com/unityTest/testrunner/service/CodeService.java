@@ -71,6 +71,7 @@ public class CodeService {
 				dockerfilePath = dockerService.getHaskellDockerFilePath();
 				entryFilePath = dockerService.getHaskellEntryFilePath();
 				entryFileName = DockerConstants.HASKELL_ENTRY_FILE;
+				break;
 			case JAVA:
 				throw new UnsupportedProgrammingLanguageException(PLanguage.JAVA);
 			default:
