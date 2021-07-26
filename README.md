@@ -296,7 +296,7 @@ You should receive a json response matching something like the following:
 
 Haskell testing uses [HUnit](https://hackage.haskell.org/package/HUnit) to run tests.
 
-The same procedure followed for [Python 3](#python-3) can be followed here with some notable differences
+The same procedure followed for [Python 3](#sample-walkthrough) can be followed here with some notable differences
 
 The differences are:
 
