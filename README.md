@@ -300,7 +300,7 @@ The same procedure followed for [Python 3](#sample-walkthrough) can be followed 
 
 The differences are:
 
-1. The Suite file to be passed must import the main program file.
+1. The uploaded Suite file must import the main program file.
 2. A `main` function is automatically created, so the uploaded file **must not** contain one.
 3. The file automatically fully imports and exposes `HUnit` package, so avoid any conflicting symbols and names.
 4. The generated file should like something like this:
