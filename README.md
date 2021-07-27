@@ -324,6 +324,14 @@ test_{func_name} :: Test
 test_{func_name} = {func_body}
 ```
 
+A sample test suite file called `Test.hs` which is testing the submission file called `Assignment1.hs`.
+
+Note: The submission file *must* have `module Assignment1 where` at the top, assuming the file is called `Assignment1.hs`.
+```Haskell
+module Test where
+import Assignment1
+```
+
 5. The test file name must match the module name. If you named the suite file `TestSuite.hs` the module declaration must read `module TestSuite where`.
 6. The suite file name be a valid module name.
 
