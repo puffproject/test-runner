@@ -174,7 +174,6 @@ public class CodeService {
 		// Write suite file content
 		bos.write(suiteFile.getContent());
 		// Write test case content to file depending on language
-		// TODO FIX THIS
 		switch (lang) {
 			case JAVA:
 				// TODO;
