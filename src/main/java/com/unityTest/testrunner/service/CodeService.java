@@ -179,7 +179,20 @@ public class CodeService {
 				// TODO;
 				break;
 			case HASKELL:
-				bos.write(caze.getCode().getBytes());
+				StringBuilder haskellBuilder = new StringBuilder();
+
+				// Importing Hunit
+				haskellBuilder.append("import HUnit\n\n");
+
+				// Main function
+				haskellBuilder.append("main :: IO ()\n");
+				haskellBuilder.append("main = do\n");
+				haskellBuilder.append(String.format("  executedTest <- runTestTT test_%s\n", caze.getFunctionName()));
+				haskellBuilder.append("  print executedTest\n\n");
+
+				haskellBuilder.append(caze.getCode());
+
+				bos.write(haskellBuilder.toString().getBytes());
 				break;
 			case PYTHON3:
 				bos.write(String.format("\n%s", Utils.indent(caze.getCode(), 1)).getBytes());
@@ -200,24 +213,9 @@ public class CodeService {
 	}
 
 	private String buildHUnitTestFunction(String funcName, String body) {
-		StringBuilder resultBuilder = new StringBuilder();
-
-		// Importing Hunit
-		resultBuilder.append("import HUnit");
-
-		// Main function
-		resultBuilder.append("\n\nmain :: IO ()\n");
-		resultBuilder.append("main = do\n");
-		resultBuilder.append("  executedTest <- runTestTT test_");
-		resultBuilder.append(funcName);
-		resultBuilder.append("\n");
-		resultBuilder.append("  print executedTest\n\n");
-
-		// Test function
-		resultBuilder.append("test_");
-		resultBuilder.append(funcName);
-		resultBuilder.append(" = ");
-		resultBuilder.append(body);
-		return resultBuilder.toString();
+		StringBuilder functionBuilder = new StringBuilder();
+		functionBuilder.append(String.format("test_%s :: Test\n", funcName));
+		functionBuilder.append(String.format("test_%s = %s", funcName, body));
+		return functionBuilder.toString();
 	}
 }
