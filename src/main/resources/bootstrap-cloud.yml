@@ -1,0 +1,6 @@
+# TODO Add cloud config details + security for deployment
+#spring:
+#  cloud:
+#    config:
+#      uri: TODO
+#      fail-fast: true
