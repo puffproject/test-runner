@@ -23,5 +23,5 @@ ulimit -Hn $PF_MAX_FILE_DESCRIPTORS
 # do the same command for the list of given dependencies.
 
 # Build and run test file
-timeout -s TERM $PF_TIMEOUT stack ghc "$TEST_FILE_NAME" -- -main-is $(basname "$TEST_FILE_NAME" .hs).main -o test
+timeout -s TERM $PF_TIMEOUT stack ghc Test.hs -- -main-is $(basename Test.hs .hs).main -o test > /dev/null
 timeout -s TERM $PF_TIMEOUT ./test
