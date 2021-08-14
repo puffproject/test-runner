@@ -182,7 +182,7 @@ public class CodeService {
 				StringBuilder haskellBuilder = new StringBuilder();
 
 				// Importing Hunit
-				haskellBuilder.append("import HUnit\n\n");
+				haskellBuilder.append("import Test.HUnit\n\n");
 
 				// Main function
 				haskellBuilder.append("main :: IO ()\n");
