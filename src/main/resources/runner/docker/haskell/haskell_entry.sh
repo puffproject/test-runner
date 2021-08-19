@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # # Set virtual memory limit (Should be big) (in kbytes)
 ulimit -v $PF_VIR_MEM
