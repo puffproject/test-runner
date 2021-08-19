@@ -5,7 +5,7 @@ ARG USER=appuser
 WORKDIR $DIR
 RUN adduser $USER
 
-RUN chown -R $USER /code
+RUN chown -R $USER $DIR
 
 USER $USER
 
