@@ -13,4 +13,4 @@ RUN stack install HUnit
 
 ADD . .
 # This build the project and run the tests
-ENTRYPOINT ["sh", "./haskell_entry.sh"]
+ENTRYPOINT ["/bin/bash", "./haskell_entry.sh"]
