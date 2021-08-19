@@ -312,7 +312,7 @@ This must include the module declaration.
 Must import the program file, the main submission.
 -}
 
-import HUnit
+import Test.HUnit
 
 main :: IO ()
 main = do
