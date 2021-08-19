@@ -1,7 +1,7 @@
 FROM haskell:8
 
 ARG DIR
-ARG USER=jeff # Consider making this an env variable
+ARG USER=appuser
 WORKDIR $DIR
 RUN adduser $USER
 
