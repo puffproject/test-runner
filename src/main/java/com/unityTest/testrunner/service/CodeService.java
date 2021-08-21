@@ -179,18 +179,38 @@ public class CodeService {
 				// TODO;
 				break;
 			case HASKELL:
+				// TODO: Consider putting code in file and replacing function name and body into read string
 				StringBuilder haskellBuilder = new StringBuilder();
 
 				// Importing Hunit
 				haskellBuilder.append("\nimport Test.HUnit\n\n");
-
+				haskellBuilder.append("import System.Exit\n\n");
 
 				// Main function
 				haskellBuilder.append("main :: IO ()\n");
 				haskellBuilder.append("main = do\n");
-				haskellBuilder.append(String.format("  executedTest <- runTestTT test_%s\n", caze.getFunctionName()));
-				haskellBuilder.append("  print executedTest\n\n");
+				// Run test
+				haskellBuilder.append(String.format("  executedTest <- runTestTT test_%s \n", caze.getFunctionName()));
+				haskellBuilder.append("  print executedTest\n");
+				haskellBuilder.append("  if errors executedTest > 0\n");
 
+				// Exit with runtime error
+				haskellBuilder.append("    then do\n");
+				haskellBuilder.append("    print $ \"Test ran with \" ++ show (errors executedTest)");
+				haskellBuilder.append("++ \" errors and \" ++ show (failures executedTest) ++ \" failures.\" \n");
+
+				haskellBuilder.append("    exitWith $ ExitFailure 2\n\n");
+
+				// Exit with test failure
+				haskellBuilder.append("    else if failures executedTest > 0\n");
+				haskellBuilder.append("      then do\n");
+				haskellBuilder.append("      print $ \"Test ran with \"");
+				haskellBuilder.append("++ show (failures executedTest) ++ \" failures.\" \n");
+
+				// Exit successfully, no failures or errors
+				haskellBuilder.append("      else print \"Test ran with no problems!\"\n");
+
+				// Add test case code
 				haskellBuilder.append(caze.getCode());
 
 				bos.write(haskellBuilder.toString().getBytes());
