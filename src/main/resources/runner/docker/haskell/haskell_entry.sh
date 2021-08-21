@@ -23,5 +23,22 @@ ulimit -Hn $PF_MAX_FILE_DESCRIPTORS
 # do the same command for the list of given dependencies.
 
 # Build and run test file
-timeout -s TERM $PF_TIMEOUT stack ghc "$TEST_FILE_NAME" -- -main-is $(basename "$TEST_FILE_NAME" .hs).main -o test > /dev/null
-timeout -s TERM $PF_TIMEOUT ./test
+timeout -s TERM $PF_TIMEOUT stack ghc "$TEST_FILE_NAME" -- -main-is $(basename "$TEST_FILE_NAME" .hs).main -o test
+
+## Handling exit code for compilation command
+COMPILESTATUS=$?
+case $COMPILESTATUS in
+    0) ## Successful compilation
+        timeout -s TERM $PF_TIMEOUT ./test
+        ;;
+    1) ## Compilation failure
+        exit 3
+        ;;
+    124) ## Command timed out
+        exit 137
+        ;;
+    *) ## Some other failure
+        echo "Some other error occurred"
+        exit $COMPILESTATUS
+        ;;
+esac

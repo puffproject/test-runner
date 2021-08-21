@@ -186,6 +186,8 @@ public class DockerService {
 						return new TestResult(caze.getId(), ResultStatus.FAIL, output);
 					case ExitCodes.RUNTIME_ERROR:
 						return new TestResult(caze.getId(), ResultStatus.RUNTIME_ERROR, output);
+					case ExitCodes.COMPILATION_ERROR:
+						return new TestResult(caze.getId(), ResultStatus.COMPILATION_ERROR, output);
 					case ExitCodes.DOCKER_RUN_FAIL:
 					case ExitCodes.SEG_FAULT:
 						return new TestResult(caze.getId(), ResultStatus.OUT_OF_MEMORY_ERROR, output);
