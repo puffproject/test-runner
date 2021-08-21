@@ -189,6 +189,60 @@ Users will then upload test cases as part of the suite. Once users upload source
 
 For a full demo see the [sample walkthrough](#sample-walkthrough) below.
 
+
+### Haskell
+
+Haskell testing uses [HUnit](https://hackage.haskell.org/package/HUnit) to run tests.
+
+The same procedure followed for [Python 3](#sample-walkthrough) can be followed here with some notable differences
+
+The differences are:
+
+1. The uploaded Suite file must import the main program file.
+2. A `main` function is automatically created, so the uploaded file **must not** contain one.
+3. The file automatically fully imports and exposes `HUnit` and `System.Exit` packages, so avoid any conflicting symbols and names.
+4. The generated file should like something like this:
+
+```haskell
+{-
+The contents for the uploaded suite file
+This must include the module declaration.
+Must import the program file, the main submission.
+-}
+
+import Test.HUnit
+import System.Exit
+
+main :: IO ()
+main = do
+  executedTest <- runTestTT test_{func_name}
+  print executedTest
+  if errors executedTest > 0
+    then do
+    print $ "Test ran with " ++ show (errors executedTest) ++ " errors and " ++ show (failures executedTest) ++ " failures."
+    exitWith $ ExitFailure 2
+    else if failures executedTest > 0
+      then do
+      print $ "Test ran with " ++ show (failures executedTest) ++ " failures."
+      exitWith $ ExitFailure 1
+      else print "Test raun with problems!"
+
+
+test_{func_name} :: Test
+test_{func_name} = {func_body}
+```
+
+A sample test suite file called `Test.hs` which is testing the submission file called `Assignment1.hs`.
+
+Note: The submission file *must* have `module Assignment1 where` at the top, assuming the file is called `Assignment1.hs`.
+```Haskell
+module Test where
+import Assignment1
+```
+
+5. The test file name must match the module name. If you named the suite file `TestSuite.hs` the module declaration must read `module TestSuite where`.
+6. The suite file name must be a valid module name.
+
 ## Sample walkthrough
 If you've followed the above setup steps then you should be able to follow the below walkthrough. This example uses test cases written in python.
 
@@ -291,49 +345,6 @@ You should receive a json response matching something like the following:
     "message": ...
 }
 ```
-
-### Haskell
-
-Haskell testing uses [HUnit](https://hackage.haskell.org/package/HUnit) to run tests.
-
-The same procedure followed for [Python 3](#sample-walkthrough) can be followed here with some notable differences
-
-The differences are:
-
-1. The uploaded Suite file must import the main program file.
-2. A `main` function is automatically created, so the uploaded file **must not** contain one.
-3. The file automatically fully imports and exposes `HUnit` package, so avoid any conflicting symbols and names.
-4. The generated file should like something like this:
-
-```haskell
-{-
-The contents for the uploaded suite file
-This must include the module declaration.
-Must import the program file, the main submission.
--}
-
-import Test.HUnit
-
-main :: IO ()
-main = do
-  executedTest <- runTestTT test_{func_name}
-  print executedTest
-
-
-test_{func_name} :: Test
-test_{func_name} = {func_body}
-```
-
-A sample test suite file called `Test.hs` which is testing the submission file called `Assignment1.hs`.
-
-Note: The submission file *must* have `module Assignment1 where` at the top, assuming the file is called `Assignment1.hs`.
-```Haskell
-module Test where
-import Assignment1
-```
-
-5. The test file name must match the module name. If you named the suite file `TestSuite.hs` the module declaration must read `module TestSuite where`.
-6. The suite file name be a valid module name.
 
 ## Contributors
 The _Puff_ project is looking for contributors to join the initiative!
