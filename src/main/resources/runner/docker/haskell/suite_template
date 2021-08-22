@@ -1,0 +1,21 @@
+
+import Test.HUnit
+import System.Exit
+
+main :: IO ()
+main = do
+  executedTest <- runTestTT test_%1$s
+  print executedTest
+  if errors executedTest > 0
+    then do
+      print $ "Test ran with " ++ show (errors executedTest) ++ " error(s) and " ++
+        show (failures executedTest) ++ " failure(s)."
+      exitWith $ ExitFailure 2
+    else
+    if failures executedTest > 0
+      then do
+      print $ "Test ran with " ++ show (failures executedTest) ++ " failure(s)."
+      exitWith $ ExitFailure 1
+      else print "Test ran with no problems!"
+
+%2$s

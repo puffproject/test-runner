@@ -18,9 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -34,6 +38,9 @@ public class CodeService {
 
 	@Value("${runner.env}")
 	private String envFile;
+
+	@Value("${docker.build.haskell.suite-template}")
+	private String haskellTestFilePath;
 
 	/**
 	 * Asynchronously run a list of test cases in an isolated environment and send back the results
@@ -179,41 +186,23 @@ public class CodeService {
 				// TODO;
 				break;
 			case HASKELL:
-				// TODO: Consider putting code in file and replacing function name and body into read string
-				StringBuilder haskellBuilder = new StringBuilder();
+				// Get suite template file
+				File file = new File(getClass().getResource(haskellTestFilePath).getFile());
+				// try to read suite template file
+				Stream<String> fileStream;
+				try {
+					fileStream = Files.lines(file.toPath(), StandardCharsets.UTF_8);
+				} catch (IOException ex) {
+					bos.close();
+					throw new IOException(ex);
+				}
+				// Load content as a string
+				String testFileString = fileStream.collect(Collectors.joining(System.lineSeparator()));
+				// Format string with function name and actual test function
+				testFileString = String.format(testFileString, caze.getFunctionName(), caze.getCode());
 
-				// Importing Hunit
-				haskellBuilder.append("\nimport Test.HUnit\n\n");
-				haskellBuilder.append("import System.Exit\n\n");
-
-				// Main function
-				haskellBuilder.append("main :: IO ()\n");
-				haskellBuilder.append("main = do\n");
-				// Run test
-				haskellBuilder.append(String.format("  executedTest <- runTestTT test_%s \n", caze.getFunctionName()));
-				haskellBuilder.append("  print executedTest\n");
-				haskellBuilder.append("  if errors executedTest > 0\n");
-
-				// Exit with runtime error
-				haskellBuilder.append("    then do\n");
-				haskellBuilder.append("    print $ \"Test ran with \" ++ show (errors executedTest)");
-				haskellBuilder.append("++ \" errors and \" ++ show (failures executedTest) ++ \" failures.\" \n");
-
-				haskellBuilder.append("    exitWith $ ExitFailure 2\n\n");
-
-				// Exit with test failure
-				haskellBuilder.append("    else if failures executedTest > 0\n");
-				haskellBuilder.append("      then do\n");
-				haskellBuilder.append("      print $ \"Test ran with \"");
-				haskellBuilder.append("++ show (failures executedTest) ++ \" failures.\" \n");
-
-				// Exit successfully, no failures or errors
-				haskellBuilder.append("      else print \"Test ran with no problems!\"\n");
-
-				// Add test case code
-				haskellBuilder.append(caze.getCode());
-
-				bos.write(haskellBuilder.toString().getBytes());
+				// Write to provided suite file
+				bos.write(testFileString.getBytes());
 				break;
 			case PYTHON3:
 				bos.write(String.format("\n%s", Utils.indent(caze.getCode(), 1)).getBytes());

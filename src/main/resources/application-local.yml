@@ -84,4 +84,5 @@ docker:
       dockerfile: /runner/docker/java/Dockerfile
     haskell:
       entry: /runner/docker/haskell/haskell_entry.sh
-      dockerfile: /runner/docker/haskell/Dockerfile
+      dockerfile: /runner/docker/haskell/Dckerfile
+      suite-template: /runner/docker/haskell/suite_template
