@@ -225,7 +225,7 @@ main = do
       then do
       print $ "Test ran with " ++ show (failures executedTest) ++ " failures."
       exitWith $ ExitFailure 1
-      else print "Test raun with problems!"
+      else print "Test(s) ran with no problems!"
 
 
 test_{func_name} :: Test
