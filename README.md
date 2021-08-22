@@ -231,6 +231,7 @@ main = do
 test_{func_name} :: Test
 test_{func_name} = {func_body}
 ```
+Yo can also check out `src/main/resources/runner/docker/suite-template` for the suite template.
 
 A sample test suite file called `Test.hs` which is testing the submission file called `Assignment1.hs`.
 
