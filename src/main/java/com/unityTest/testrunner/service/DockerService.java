@@ -51,9 +51,17 @@ public class DockerService {
 	@Value("${docker.build.python3.entry}")
 	private String pythonEntryFilePath;
 
+	@Getter
+	@Value("${docker.build.haskell.dockerfile}")
+	private String haskellDockerFilePath;
+
+	@Getter
+	@Value("${docker.build.haskell.entry}")
+	private String haskellEntryFilePath;
+
 	/**
 	 * Build a docker image with the name image:tag from the working directory
-	 * 
+	 *
 	 * @param image Image name
 	 * @param tag Image tag
 	 * @param workingDir Working directory from which to run the `docker build` command
@@ -105,7 +113,7 @@ public class DockerService {
 
 	/**
 	 * Run a test case in an isolated docker container
-	 * 
+	 *
 	 * @param caze Test case to run
 	 * @param image Image from which to build the docker container
 	 * @param envPath Resource path to environment file containing env values to pass to container
@@ -178,6 +186,8 @@ public class DockerService {
 						return new TestResult(caze.getId(), ResultStatus.FAIL, output);
 					case ExitCodes.RUNTIME_ERROR:
 						return new TestResult(caze.getId(), ResultStatus.RUNTIME_ERROR, output);
+					case ExitCodes.COMPILATION_ERROR:
+						return new TestResult(caze.getId(), ResultStatus.COMPILATION_ERROR, output);
 					case ExitCodes.DOCKER_RUN_FAIL:
 					case ExitCodes.SEG_FAULT:
 						return new TestResult(caze.getId(), ResultStatus.OUT_OF_MEMORY_ERROR, output);

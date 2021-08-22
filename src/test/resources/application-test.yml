@@ -68,5 +68,6 @@ docker:
       entry: TODO
       dockerfile: /runner/docker/java/Dockerfile
     haskell:
-      entry: TODO
+      entry: /runner/docker/haskell/haskell_entry.sh
       dockerfile: /runner/docker/haskell/Dockerfile
+      suite-template: /runner/docker/haskell/suite_template

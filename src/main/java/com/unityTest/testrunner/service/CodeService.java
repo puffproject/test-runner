@@ -18,9 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -35,9 +39,12 @@ public class CodeService {
 	@Value("${runner.env}")
 	private String envFile;
 
+	@Value("${docker.build.haskell.suite-template}")
+	private String haskellTestFilePath;
+
 	/**
 	 * Asynchronously run a list of test cases in an isolated environment and send back the results
-	 * 
+	 *
 	 * @param emitter Emitter to send back results or errors
 	 * @param submission Code submission containing source files
 	 * @param suite Suite test cases belong to
@@ -67,7 +74,11 @@ public class CodeService {
 				entryFileName = DockerConstants.PYTHON_ENTRY_FILE;
 				break;
 			case HASKELL:
-				throw new UnsupportedProgrammingLanguageException(PLanguage.HASKELL);
+				imageName = DockerConstants.HASKELL_DOCKER_IMAGE_NAME;
+				dockerfilePath = dockerService.getHaskellDockerFilePath();
+				entryFilePath = dockerService.getHaskellEntryFilePath();
+				entryFileName = DockerConstants.HASKELL_ENTRY_FILE;
+				break;
 			case JAVA:
 				throw new UnsupportedProgrammingLanguageException(PLanguage.JAVA);
 			default:
@@ -154,8 +165,7 @@ public class CodeService {
 				// TODO Implement java code builder
 				break;
 			case HASKELL:
-				// TODO Implement haskell code builder
-				break;
+				return buildHUnitTestFunction(functionName, functionBody);
 			case PYTHON3:
 				return buildPythonTestFunction(functionName, functionBody);
 			default:
@@ -171,8 +181,36 @@ public class CodeService {
 		// Write suite file content
 		bos.write(suiteFile.getContent());
 		// Write test case content to file depending on language
-		// TODO FIX THIS
-		bos.write(String.format("\n%s", Utils.indent(caze.getCode(), 1)).getBytes());
+		switch (lang) {
+			case JAVA:
+				// TODO;
+				break;
+			case HASKELL:
+				// Get suite template file
+				File file = new File(getClass().getResource(haskellTestFilePath).getFile());
+				// try to read suite template file
+				Stream<String> fileStream;
+				try {
+					fileStream = Files.lines(file.toPath(), StandardCharsets.UTF_8);
+				} catch (IOException ex) {
+					bos.close();
+					throw new IOException(ex);
+				}
+				// Load content as a string
+				String testFileString = fileStream.collect(Collectors.joining(System.lineSeparator()));
+				// Format string with function name and actual test function
+				testFileString = String.format(testFileString, caze.getFunctionName(), caze.getCode());
+
+				// Write to provided suite file
+				bos.write(testFileString.getBytes());
+				break;
+			case PYTHON3:
+				bos.write(String.format("\n%s", Utils.indent(caze.getCode(), 1)).getBytes());
+				break;
+			default:
+				bos.close();
+				throw new UnsupportedProgrammingLanguageException(lang);
+		}
 		bos.flush();
 		bos.close();
 	}
@@ -182,5 +220,12 @@ public class CodeService {
 		final String def = String.format("def test_%s(self):\n", funcName);
 		// Create code block by indenting the body by one tab
 		return def.concat(Utils.indent(body, 1).concat("\n"));
+	}
+
+	private String buildHUnitTestFunction(String funcName, String body) {
+		StringBuilder functionBuilder = new StringBuilder();
+		functionBuilder.append(String.format("test_%s :: Test\n", funcName));
+		functionBuilder.append(String.format("test_%s = %s", funcName, body));
+		return functionBuilder.toString();
 	}
 }
