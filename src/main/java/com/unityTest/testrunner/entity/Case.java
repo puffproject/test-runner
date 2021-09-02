@@ -49,8 +49,12 @@ public class Case {
 	private String description;
 
 	// Number of upvotes for test case, needed for easy sorting & pagination when pulling test cases
-	@Column(name = "UPVOTE_COUNT")
+	@Column(name = "UPVOTE_SCORE")
 	private int upvotes;
+
+	// Number of comments on a test case, removes an extra api call when pulling test cases
+	@Column(name = "COMMENT_COUNT")
+	private int comments = 0;
 
 	@Column(name = "RUN_COUNT")
 	private int runCount;
@@ -72,7 +76,7 @@ public class Case {
 			String description,
 			PLanguage language,
 			String code) {
-		this(0, suite, authorId, functionName, description, 0, 0, 0, language, code);
+		this(0, suite, authorId, functionName, description, 0, 0, 0, 0, language, code);
 	}
 
 	/**
@@ -94,7 +98,7 @@ public class Case {
 	 */
 	public TestCase toTestCase() {
 		return new TestCase(
-				this.id, this.suite, this.description, this.language, null, this.upvotes,
+				this.id, this.suite, this.description, this.language, null, this.upvotes, this.comments,
 				new CaseStats(this.runCount, this.passCount), this.code);
 	}
 }
