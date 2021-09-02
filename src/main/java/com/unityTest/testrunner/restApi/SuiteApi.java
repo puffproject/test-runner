@@ -110,17 +110,17 @@ public interface SuiteApi extends BaseApi {
 			@ApiParam(value = "Test suite id", required = true) @PathVariable(value = "suiteId") Integer suiteId);
 
 	/**
-	 * POST endpoint to update test suite vote count SYSTEM LEVEL endpoint only accessible with ROLE_SYS
-	 * 
-	 * @param suiteId Id of case
-	 * @param action Vote action
+	 * PUT endpoint to update test suite vote score. SYSTEM LEVEL endpoint only accessible with ROLE_SYS
+	 *
+	 * @param suiteId Id of suite
+	 * @param count New vote count
 	 */
-	@ApiOperation(value = "Vote on a test case", nickname = "voteTestSuite")
+	@ApiOperation(value = "Update vote score on a test suite", nickname = "updateVoteScoreOnTestSuite")
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
-	@PostMapping(value = "/{suiteId}/vote")
-	void voteOnTestSuite(
+	@PutMapping(value = "/{suiteId}/vote")
+	void updateVoteScoreOnTestSuite(
 			@ApiParam(value = "Test suite id", required = true) @PathVariable(value = "suiteId") Integer suiteId,
-			@ApiParam(value = "Vote action", required = true) @RequestParam(value = "action") String action);
+			@ApiParam(value = "Updated vote count", required = true) @RequestParam(value = "count") Integer count);
 
 	/**
 	 * POST endpoint to run test cases in test suite using source files from a submission

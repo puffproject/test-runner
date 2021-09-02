@@ -186,15 +186,26 @@ public class CaseService {
 	/**
 	 * Update the upvote count on a case
 	 * 
-	 * @param id Id of case to vote on
-	 * @param action Vote action to modify upvote count
+	 * @param id Id of case to upvote vote count on
+	 * @param count New upvote count for case
 	 */
-	public void updateCaseUpvotes(int id, VoteAction action) {
+	public void updateCaseUpvotes(int id, int count) {
 		// Find case to update
 		Case caseToUpdate = getCaseById(id);
 		// Update vote count
-		int change = action == VoteAction.UPVOTE ? 1 : -1;
-		caseToUpdate.setUpvotes(caseToUpdate.getUpvotes() + change);
+		caseToUpdate.setUpvotes(count);
+		caseRepository.save(caseToUpdate);
+	}
+
+	/**
+	 * Update the comment count on a case
+	 * 
+	 * @param id Id of case to update comment count on
+	 * @param increment Increment to add to comment count on case
+	 */
+	public void updateCaseCommentCountBy(int id, int increment) {
+		Case caseToUpdate = getCaseById(id);
+		caseToUpdate.setComments(caseToUpdate.getComments() + increment);
 		caseRepository.save(caseToUpdate);
 	}
 

@@ -167,15 +167,13 @@ public class SuiteService {
 	/**
 	 * Update the upvote count on a suite
 	 * 
-	 * @param id Id of suite to vote on
-	 * @param action Vote action to modify upvote count
+	 * @param id Id of suite to update count on
+	 * @param count New vote count to update on suite
 	 */
-	public void updateSuiteUpvotes(int id, VoteAction action) {
+	public void updateSuiteUpvotes(int id, int count) {
 		// Find suite to update
 		Suite suite = getSuiteById(id);
-		// Update vote count
-		int change = action == VoteAction.UPVOTE ? 1 : -1;
-		suite.setUpvotes(suite.getUpvotes() + change);
+		suite.setUpvotes(count);
 		suiteRepository.save(suite);
 	}
 }

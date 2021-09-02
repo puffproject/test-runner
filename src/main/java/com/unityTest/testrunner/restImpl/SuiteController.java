@@ -118,10 +118,8 @@ public class SuiteController implements SuiteApi {
 
 	@Override
 	@RolesAllowed("ROLE_SYS")
-	public void voteOnTestSuite(Integer suiteId, String action) {
-		// Convert action to VoteAction
-		VoteAction voteAction = Utils.parseVoteAction(action);
-		suiteService.updateSuiteUpvotes(suiteId, voteAction);
+	public void updateVoteScoreOnTestSuite(Integer suiteId, Integer count) {
+		suiteService.updateSuiteUpvotes(suiteId, count);
 	}
 
 	@Override

@@ -91,15 +91,27 @@ public interface CaseApi extends BaseApi {
 			@ApiParam(value = "Test case id", required = true) @PathVariable(value = "caseId") Integer caseId);
 
 	/**
-	 * POST endpoint to update test case vote count SYSTEM LEVEL endpoint only accessible with ROLE_SYS
+	 * PUT endpoint to update test case vote score. SYSTEM LEVEL endpoint only accessible with ROLE_SYS
 	 * 
 	 * @param caseId Id of case
-	 * @param action Vote action
+	 * @param count New vote count
 	 */
-	@ApiOperation(value = "Vote on a test case", nickname = "voteTestCase")
+	@ApiOperation(value = "Update vote score on a test case", nickname = "updateVoteScoreOnTestCase")
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
-	@PostMapping(value = "/{caseId}/vote")
-	void voteOnTestCase(
+	@PutMapping(value = "/{caseId}/vote")
+	void updateVoteScoreOnTestCase(
 			@ApiParam(value = "Test case id", required = true) @PathVariable(value = "caseId") Integer caseId,
-			@ApiParam(value = "Vote action", required = true) @RequestParam(value = "action") String action);
+			@ApiParam(value = "Updated vote count", required = true) @RequestParam(value = "count") Integer count);
+
+	/**
+	 * PUT endpoint to increment test case comment count. SYSTEM LEVEL endpoint only accessible with
+	 * ROLE_SYS
+	 *
+	 * @param caseId Id of case
+	 */
+	@ApiOperation(value = "Increment the comment count on a test case", nickname = "incrementCommentCount")
+	@ResponseStatus(code = HttpStatus.NO_CONTENT)
+	@PostMapping(value = "/{caseId}/addComment")
+	void incrementCommentCountOnTestCase(
+			@ApiParam(value = "Test case id", required = true) @PathVariable(value = "caseId") Integer caseId);
 }

@@ -93,9 +93,13 @@ public class CaseController implements CaseApi {
 
 	@Override
 	@RolesAllowed("ROLE_SYS")
-	public void voteOnTestCase(Integer caseId, String action) {
-		// Convert action to VoteAction
-		VoteAction voteAction = Utils.parseVoteAction(action);
-		caseService.updateCaseUpvotes(caseId, voteAction);
+	public void updateVoteScoreOnTestCase(Integer caseId, Integer count) {
+		caseService.updateCaseUpvotes(caseId, count);
+	}
+
+	@Override
+	@RolesAllowed("ROLE_SYS")
+	public void incrementCommentCountOnTestCase(Integer caseId) {
+		caseService.updateCaseCommentCountBy(caseId, 1);
 	}
 }
