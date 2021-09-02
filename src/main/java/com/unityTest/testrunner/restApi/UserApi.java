@@ -1,8 +1,8 @@
 package com.unityTest.testrunner.restApi;
 
-import com.unityTest.testrunner.models.page.SuitePage;
-import com.unityTest.testrunner.models.page.TestCasePage;
-import com.unityTest.testrunner.models.page.SubmissionEventPage;
+import com.unityTest.testrunner.models.api.response.page.SuitePage;
+import com.unityTest.testrunner.models.api.response.page.TestCasePage;
+import com.unityTest.testrunner.models.api.response.page.SubmissionEventPage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

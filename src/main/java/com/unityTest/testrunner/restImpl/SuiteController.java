@@ -2,11 +2,11 @@ package com.unityTest.testrunner.restImpl;
 
 import com.unityTest.testrunner.entity.*;
 import com.unityTest.testrunner.entity.Case_;
-import com.unityTest.testrunner.models.PLanguage;
+import com.unityTest.testrunner.entity.PLanguage;
 import com.unityTest.testrunner.models.VoteAction;
-import com.unityTest.testrunner.models.page.SuitePage;
-import com.unityTest.testrunner.models.response.FileInfo;
-import com.unityTest.testrunner.models.response.FileUploadEvent;
+import com.unityTest.testrunner.models.api.response.page.SuitePage;
+import com.unityTest.testrunner.models.api.response.FileInfo;
+import com.unityTest.testrunner.models.api.response.FileUploadEvent;
 import com.unityTest.testrunner.restApi.SuiteApi;
 import com.unityTest.testrunner.service.CaseService;
 import com.unityTest.testrunner.service.CodeService;

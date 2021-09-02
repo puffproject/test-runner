@@ -1,11 +1,9 @@
-package com.unityTest.testrunner.models.response;
+package com.unityTest.testrunner.models.api.response;
 
-import com.unityTest.testrunner.entity.SourceFile;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

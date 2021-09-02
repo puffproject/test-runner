@@ -1,9 +1,8 @@
 package com.unityTest.testrunner.entity;
 
-import com.unityTest.testrunner.models.PLanguage;
-import com.unityTest.testrunner.models.response.Author;
-import com.unityTest.testrunner.models.response.CaseStats;
-import com.unityTest.testrunner.models.response.TestCase;
+import com.unityTest.testrunner.models.api.response.Author;
+import com.unityTest.testrunner.models.api.response.CaseStats;
+import com.unityTest.testrunner.models.api.response.TestCase;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -5,13 +5,12 @@ import com.unityTest.testrunner.entity.Case;
 import com.unityTest.testrunner.exception.code.DockerImageBuildFailureException;
 import com.unityTest.testrunner.exception.code.DockerTimeoutException;
 import com.unityTest.testrunner.models.ResultStatus;
-import com.unityTest.testrunner.models.response.TestResult;
+import com.unityTest.testrunner.models.api.response.TestResult;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.*;

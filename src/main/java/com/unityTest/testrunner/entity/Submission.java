@@ -1,6 +1,6 @@
 package com.unityTest.testrunner.entity;
 
-import com.unityTest.testrunner.models.response.SubmissionEvent;
+import com.unityTest.testrunner.models.api.response.SubmissionEvent;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;

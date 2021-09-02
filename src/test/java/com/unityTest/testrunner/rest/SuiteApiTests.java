@@ -1,7 +1,7 @@
 package com.unityTest.testrunner.rest;
 
 import com.unityTest.testrunner.entity.Suite;
-import com.unityTest.testrunner.models.PLanguage;
+import com.unityTest.testrunner.entity.PLanguage;
 import com.unityTest.testrunner.repository.SuiteRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.unityTest.testrunner.models;
+package com.unityTest.testrunner.entity;
 
 public enum PLanguage {
 	JAVA,

@@ -1,4 +1,4 @@
-package com.unityTest.testrunner.models.response;
+package com.unityTest.testrunner.models.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.unityTest.testrunner.entity.SourceFile;

@@ -1,7 +1,7 @@
-package com.unityTest.testrunner.models.page;
+package com.unityTest.testrunner.models.api.response.page;
 
 import com.unityTest.testrunner.entity.Submission;
-import com.unityTest.testrunner.models.response.SubmissionEvent;
+import com.unityTest.testrunner.models.api.response.SubmissionEvent;
 import io.swagger.annotations.ApiModel;
 import org.springframework.data.domain.Page;
 

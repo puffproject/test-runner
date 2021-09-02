@@ -1,6 +1,6 @@
 package com.unityTest.testrunner.exception.code;
 
-import com.unityTest.testrunner.models.PLanguage;
+import com.unityTest.testrunner.entity.PLanguage;
 
 public class UnsupportedProgrammingLanguageException extends RuntimeException {
 	public UnsupportedProgrammingLanguageException(PLanguage pLanguage) {

@@ -1,7 +1,6 @@
 package com.unityTest.testrunner.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.unityTest.testrunner.models.PLanguage;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

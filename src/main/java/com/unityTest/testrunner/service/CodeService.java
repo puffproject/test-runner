@@ -6,7 +6,7 @@ import com.unityTest.testrunner.exception.code.DockerImageBuildFailureException;
 import com.unityTest.testrunner.exception.code.DockerTimeoutException;
 import com.unityTest.testrunner.exception.code.InvalidFunctionNameException;
 import com.unityTest.testrunner.exception.code.UnsupportedProgrammingLanguageException;
-import com.unityTest.testrunner.models.PLanguage;
+import com.unityTest.testrunner.entity.PLanguage;
 import com.unityTest.testrunner.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;

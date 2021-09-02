@@ -1,6 +1,6 @@
 package com.unityTest.testrunner.exception;
 
-import com.unityTest.testrunner.models.PLanguage;
+import com.unityTest.testrunner.entity.PLanguage;
 
 public class ProgrammingLanguageMismatch extends RuntimeException {
 	public ProgrammingLanguageMismatch(PLanguage expected, PLanguage actual) {

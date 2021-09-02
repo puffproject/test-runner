@@ -1,12 +1,11 @@
-package com.unityTest.testrunner.models.page;
+package com.unityTest.testrunner.models.api.response.page;
 
 import com.unityTest.testrunner.entity.Case;
-import com.unityTest.testrunner.models.response.Author;
-import com.unityTest.testrunner.models.response.TestCase;
+import com.unityTest.testrunner.models.api.response.Author;
+import com.unityTest.testrunner.models.api.response.TestCase;
 import io.swagger.annotations.ApiModel;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.data.domain.Page;
 

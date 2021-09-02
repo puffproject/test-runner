@@ -1,10 +1,10 @@
 package com.unityTest.testrunner.restApi;
 
 import com.unityTest.testrunner.entity.Suite;
-import com.unityTest.testrunner.models.response.FileInfo;
-import com.unityTest.testrunner.models.page.SuitePage;
-import com.unityTest.testrunner.models.response.FileUploadEvent;
-import com.unityTest.testrunner.models.response.TestResult;
+import com.unityTest.testrunner.models.api.response.FileInfo;
+import com.unityTest.testrunner.models.api.response.page.SuitePage;
+import com.unityTest.testrunner.models.api.response.FileUploadEvent;
+import com.unityTest.testrunner.models.api.response.TestResult;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

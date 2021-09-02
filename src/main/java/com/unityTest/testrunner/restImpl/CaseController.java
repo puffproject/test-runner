@@ -1,12 +1,12 @@
 package com.unityTest.testrunner.restImpl;
 
 import com.unityTest.testrunner.entity.Case;
-import com.unityTest.testrunner.models.PLanguage;
-import com.unityTest.testrunner.models.TestCaseInfo;
+import com.unityTest.testrunner.entity.PLanguage;
+import com.unityTest.testrunner.models.api.request.TestCaseInfo;
 import com.unityTest.testrunner.models.VoteAction;
-import com.unityTest.testrunner.models.page.TestCasePage;
-import com.unityTest.testrunner.models.response.Author;
-import com.unityTest.testrunner.models.response.TestCase;
+import com.unityTest.testrunner.models.api.response.page.TestCasePage;
+import com.unityTest.testrunner.models.api.response.Author;
+import com.unityTest.testrunner.models.api.response.TestCase;
 import com.unityTest.testrunner.restApi.CaseApi;
 import com.unityTest.testrunner.service.CaseService;
 import com.unityTest.testrunner.service.KeycloakService;
@@ -24,7 +24,6 @@ import javax.validation.Valid;
 import org.springframework.data.domain.Pageable;
 
 import java.security.Principal;
-import java.util.List;
 
 /**
  * Rest controller for /case/* endpoints

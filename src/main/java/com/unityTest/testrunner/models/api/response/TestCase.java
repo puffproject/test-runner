@@ -1,7 +1,7 @@
-package com.unityTest.testrunner.models.response;
+package com.unityTest.testrunner.models.api.response;
 
 import com.unityTest.testrunner.entity.Suite;
-import com.unityTest.testrunner.models.PLanguage;
+import com.unityTest.testrunner.entity.PLanguage;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

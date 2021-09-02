@@ -1,6 +1,6 @@
 package com.unityTest.testrunner.restApi;
 
-import com.unityTest.testrunner.models.response.SubmissionEvent;
+import com.unityTest.testrunner.models.api.response.SubmissionEvent;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

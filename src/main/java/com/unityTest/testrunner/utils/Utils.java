@@ -1,6 +1,6 @@
 package com.unityTest.testrunner.utils;
 
-import com.unityTest.testrunner.models.PLanguage;
+import com.unityTest.testrunner.entity.PLanguage;
 import com.unityTest.testrunner.models.VoteAction;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.representations.AccessToken;

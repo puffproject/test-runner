@@ -1,23 +1,20 @@
 package com.unityTest.testrunner.restApi;
 
-import com.unityTest.testrunner.entity.Case;
-import com.unityTest.testrunner.models.TestCaseInfo;
-import com.unityTest.testrunner.models.page.TestCasePage;
-import com.unityTest.testrunner.models.response.TestCase;
+import com.unityTest.testrunner.models.api.request.TestCaseInfo;
+import com.unityTest.testrunner.models.api.response.page.TestCasePage;
+import com.unityTest.testrunner.models.api.response.TestCase;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 import javax.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
-import java.util.List;
 
 @Api(value = "Test case API", tags = "Test case API", description = "Manage and run test cases")
 @Validated

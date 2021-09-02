@@ -1,4 +1,4 @@
-package com.unityTest.testrunner.models.response;
+package com.unityTest.testrunner.models.api.response;
 
 import com.unityTest.testrunner.models.ResultStatus;
 import io.swagger.annotations.ApiModel;
