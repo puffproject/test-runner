@@ -34,7 +34,7 @@ public class TestCase {
 	@ApiModelProperty(value = "Author name", required = true)
 	private Author author;
 
-	// Engagement stats for the test case, upvotes, comment count etc.
+	// Upvote score for the test case
 	@ApiModelProperty(value = "Upvote score", required = true)
 	private int upvotes;
 
