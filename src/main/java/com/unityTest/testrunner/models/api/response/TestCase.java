@@ -35,9 +35,11 @@ public class TestCase {
 	private Author author;
 
 	// Engagement stats for the test case, upvotes, comment count etc.
-	@ApiModelProperty(value = "Engagement statistics", required = true)
-	// TODO Change this to engagement using course-management endpoints
+	@ApiModelProperty(value = "Upvote score", required = true)
 	private int upvotes;
+
+	@ApiModelProperty(value = "Comment count", required = true)
+	private int comments;
 
 	// Statistics for the test case, run count, pass count etc.
 	@ApiModelProperty(value = "Test case statistics", required = true)
