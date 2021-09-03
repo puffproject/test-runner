@@ -8,7 +8,6 @@ import com.unityTest.testrunner.exception.ElementNotFoundException;
 import com.unityTest.testrunner.exception.ProgrammingLanguageMismatch;
 import com.unityTest.testrunner.entity.PLanguage;
 import com.unityTest.testrunner.models.api.request.TestCaseInfo;
-import com.unityTest.testrunner.models.VoteAction;
 import com.unityTest.testrunner.repository.CaseRepository;
 import com.unityTest.testrunner.utils.specification.AndSpecification;
 import org.springframework.beans.factory.annotation.Autowired;

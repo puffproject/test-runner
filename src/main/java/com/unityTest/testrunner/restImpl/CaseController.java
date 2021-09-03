@@ -3,7 +3,6 @@ package com.unityTest.testrunner.restImpl;
 import com.unityTest.testrunner.entity.Case;
 import com.unityTest.testrunner.entity.PLanguage;
 import com.unityTest.testrunner.models.api.request.TestCaseInfo;
-import com.unityTest.testrunner.models.VoteAction;
 import com.unityTest.testrunner.models.api.response.page.TestCasePage;
 import com.unityTest.testrunner.models.api.response.Author;
 import com.unityTest.testrunner.models.api.response.TestCase;

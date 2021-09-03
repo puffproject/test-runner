@@ -8,7 +8,6 @@ import com.unityTest.testrunner.exception.ElementNotFoundException;
 import com.unityTest.testrunner.exception.NoFilesUploadedException;
 import com.unityTest.testrunner.exception.NoSuiteFileException;
 import com.unityTest.testrunner.entity.PLanguage;
-import com.unityTest.testrunner.models.VoteAction;
 import com.unityTest.testrunner.repository.SuiteFileRepository;
 import com.unityTest.testrunner.repository.SuiteRepository;
 import com.unityTest.testrunner.utils.specification.AndSpecification;

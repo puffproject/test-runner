@@ -3,7 +3,6 @@ package com.unityTest.testrunner.restImpl;
 import com.unityTest.testrunner.entity.*;
 import com.unityTest.testrunner.entity.Case_;
 import com.unityTest.testrunner.entity.PLanguage;
-import com.unityTest.testrunner.models.VoteAction;
 import com.unityTest.testrunner.models.api.response.page.SuitePage;
 import com.unityTest.testrunner.models.api.response.FileInfo;
 import com.unityTest.testrunner.models.api.response.FileUploadEvent;
