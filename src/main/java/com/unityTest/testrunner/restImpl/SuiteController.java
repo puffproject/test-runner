@@ -3,7 +3,6 @@ package com.unityTest.testrunner.restImpl;
 import com.unityTest.testrunner.entity.*;
 import com.unityTest.testrunner.entity.Case_;
 import com.unityTest.testrunner.entity.PLanguage;
-import com.unityTest.testrunner.models.VoteAction;
 import com.unityTest.testrunner.models.api.response.page.SuitePage;
 import com.unityTest.testrunner.models.api.response.FileInfo;
 import com.unityTest.testrunner.models.api.response.FileUploadEvent;
@@ -118,10 +117,8 @@ public class SuiteController implements SuiteApi {
 
 	@Override
 	@RolesAllowed("ROLE_SYS")
-	public void voteOnTestSuite(Integer suiteId, String action) {
-		// Convert action to VoteAction
-		VoteAction voteAction = Utils.parseVoteAction(action);
-		suiteService.updateSuiteUpvotes(suiteId, voteAction);
+	public void updateVoteScoreOnTestSuite(Integer suiteId, Integer count) {
+		suiteService.updateSuiteUpvotes(suiteId, count);
 	}
 
 	@Override

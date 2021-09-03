@@ -54,7 +54,7 @@ public class Suite {
 
 	// Upvote count of test suite
 	@ApiModelProperty(value = "upvotes")
-	@Column(name = "UPVOTE_COUNT")
+	@Column(name = "UPVOTE_SCORE")
 	private int upvotes;
 
 	@JsonIgnore

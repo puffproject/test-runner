@@ -3,7 +3,6 @@ package com.unityTest.testrunner.restImpl;
 import com.unityTest.testrunner.entity.Case;
 import com.unityTest.testrunner.entity.PLanguage;
 import com.unityTest.testrunner.models.api.request.TestCaseInfo;
-import com.unityTest.testrunner.models.VoteAction;
 import com.unityTest.testrunner.models.api.response.page.TestCasePage;
 import com.unityTest.testrunner.models.api.response.Author;
 import com.unityTest.testrunner.models.api.response.TestCase;
@@ -93,9 +92,13 @@ public class CaseController implements CaseApi {
 
 	@Override
 	@RolesAllowed("ROLE_SYS")
-	public void voteOnTestCase(Integer caseId, String action) {
-		// Convert action to VoteAction
-		VoteAction voteAction = Utils.parseVoteAction(action);
-		caseService.updateCaseUpvotes(caseId, voteAction);
+	public void updateVoteScoreOnTestCase(Integer caseId, Integer count) {
+		caseService.updateCaseUpvotes(caseId, count);
+	}
+
+	@Override
+	@RolesAllowed("ROLE_SYS")
+	public void incrementCommentCountOnTestCase(Integer caseId) {
+		caseService.updateCaseCommentCountBy(caseId, 1);
 	}
 }
