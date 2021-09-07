@@ -143,7 +143,7 @@ public class SuiteController implements SuiteApi {
 		if (ids == null || ids.size() == 0) {
 			int maxCaseCount = limit == null ? DEFAULT_LIMIT : limit;
 			Pageable pageable = PageRequest.of(0, maxCaseCount, Sort.Direction.DESC, Case_.UPVOTES);
-			cases = caseService.getCases(pageable, null, suiteId, null, null, null).getContent();
+			cases = caseService.getCases(pageable, null, suiteId, null, null, null, null).getContent();
 		} else {
 			cases = caseService.getCases(ids, suiteId);
 		}

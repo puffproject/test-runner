@@ -54,6 +54,7 @@ public interface CaseApi extends BaseApi {
 			Pageable pageable,
 			@ApiParam("Case id") @RequestParam(value = "id", required = false) Integer id,
 			@ApiParam("Suite id") @RequestParam(value = "suiteId", required = false) Integer suiteId,
+			@ApiParam("Assignment id") @RequestParam(value = "assignmentId", required = false) Integer assignmentId,
 			@ApiParam("Function name") @RequestParam(value = "name", required = false) String functionName,
 			@ApiParam("Programming language") @RequestParam(value = "lang", required = false) String lang);
 

@@ -56,6 +56,7 @@ public interface UserApi extends BaseApi {
 			Pageable pageable,
 			@ApiParam("Test case id") @RequestParam(value = "id", required = false) Integer id,
 			@ApiParam("Suite id") @RequestParam(value = "suiteId", required = false) Integer suiteId,
+			@ApiParam("Assignment id") @RequestParam(value = "assignmentId", required = false) Integer assignmentId,
 			@ApiParam("Function name") @RequestParam(value = "name", required = false) String functionName,
 			@ApiParam("Programming language") @RequestParam(value = "lang", required = false) String lang);
 

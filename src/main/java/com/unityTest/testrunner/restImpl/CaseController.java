@@ -52,12 +52,13 @@ public class CaseController implements CaseApi {
 			Pageable pageable,
 			Integer id,
 			Integer suiteId,
+			Integer assignmentId,
 			String functionName,
 			String lang) {
 		// Convert lang to PLanguage
 		PLanguage pLanguage = Utils.parsePLanguage(lang);
 		// Retrieve results using service
-		Page<Case> casePage = caseService.getCases(pageable, id, suiteId, functionName, pLanguage, null);
+		Page<Case> casePage = caseService.getCases(pageable, id, suiteId, assignmentId, functionName, pLanguage, null);
 		TestCasePage page = new TestCasePage(casePage, keycloakService.getConnection(), keycloakService.getRealmName());
 		return new ResponseEntity<>(page, HttpStatus.OK);
 	}
