@@ -72,13 +72,20 @@ public class CaseService {
 	 * 
 	 * @param id Id of case to fetch
 	 * @param suiteId Suite id to match
+	 * @param assignmentId Id of associated assignment
 	 * @param functionName Function name of case to match
 	 * @param pLanguage Programming language of case to match
 	 * @param authorId Author id of case to match
 	 * @return List of cases with fields matching the passed arguments
 	 */
-	public List<Case> getCases(Integer id, Integer suiteId, String functionName, PLanguage pLanguage, String authorId) {
-		return getCases(Pageable.unpaged(), id, suiteId, functionName, pLanguage, authorId).getContent();
+	public List<Case> getCases(
+			Integer id,
+			Integer suiteId,
+			Integer assignmentId,
+			String functionName,
+			PLanguage pLanguage,
+			String authorId) {
+		return getCases(Pageable.unpaged(), id, suiteId, assignmentId, functionName, pLanguage, authorId).getContent();
 	}
 
 	/**
@@ -87,6 +94,7 @@ public class CaseService {
 	 * @param pageable Pageable object specifying page size, sort and index
 	 * @param id Id of case to fetch
 	 * @param suiteId Suite id to match
+	 * @param assignmentId Id of associated assignment
 	 * @param functionName Function name of case to match
 	 * @param pLanguage Programming language of case to match
 	 * @param authorId Author id of case to match
@@ -97,6 +105,7 @@ public class CaseService {
 			Pageable pageable,
 			Integer id,
 			Integer suiteId,
+			Integer assignmentId,
 			String functionName,
 			PLanguage pLanguage,
 			String authorId) {
@@ -104,6 +113,7 @@ public class CaseService {
 		Specification<Case> spec = new AndSpecification<Case>()
 			.equal(id, Case_.ID)
 			.equal(suiteId, Case_.SUITE, Suite_.ID)
+			.equal(assignmentId, Case_.SUITE, Suite_.ASSIGNMENT_ID)
 			.equal(functionName, Case_.FUNCTION_NAME)
 			.equal(pLanguage, Case_.LANGUAGE)
 			.equal(authorId, Case_.AUTHOR_ID)

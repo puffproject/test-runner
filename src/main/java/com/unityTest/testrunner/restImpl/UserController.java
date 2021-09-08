@@ -64,6 +64,7 @@ public class UserController implements UserApi {
 			Pageable pageable,
 			Integer id,
 			Integer suiteId,
+			Integer assignmentId,
 			String functionName,
 			String lang) {
 		AccessToken token = Utils.getAuthToken(principal); // Extract request access token
@@ -72,7 +73,8 @@ public class UserController implements UserApi {
 		// Convert lang to PLanguage
 		PLanguage pLanguage = Utils.parsePLanguage(lang);
 		// Call case service and build TestCasePage to return
-		Page<Case> page = caseService.getCases(pageable, id, suiteId, functionName, pLanguage, token.getSubject());
+		Page<Case> page =
+			caseService.getCases(pageable, id, suiteId, assignmentId, functionName, pLanguage, token.getSubject());
 		return new ResponseEntity<>(new TestCasePage(page, author), HttpStatus.OK);
 	}
 
